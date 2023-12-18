@@ -9,7 +9,7 @@ We build a separate profile for each data type. Each profile is versioned separa
 
 The data types are:
 
-- Weather forecast
+- Weather forecast timeseries
 - Aviation
 - In-situ observations
 - Radar
