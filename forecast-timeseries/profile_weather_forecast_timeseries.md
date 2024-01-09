@@ -4,6 +4,8 @@ A service that is compliant with this profile is also compliant with [OGC-API ED
 
 Add this profile as a conformance class to your api with the link: [https://github.com/metno/edr-profile/blob/main/profile_weather_forecast_timeseries.md](https://github.com/metno/edr-profile/blob/main/profile_weather_forecast_timeseries.md)
 
+Example service: ...
+
 ## Overview
 
 A profile for an EDR service that has weather forecast timeseries collection. A Weather forecast timeseries delivers a set for parameters from a weather forecast models for a number of timesteps for one vertical level.
@@ -34,12 +36,12 @@ A profile for an EDR service that has weather forecast timeseries collection. A 
 
 #### /collections
 
-- A: temporal extent MUST either be null or specify the start and end time that cover all instances of this collection.
+- A: temporal extent SHALL either be null or specify the start and end time that cover all instances of this collection.
 - B: parameter_names includes all parameters mentioned in at least one of the instances. No guarantee that a paremter will be available for all instances.
 
 #### /collections/<collectionid>/instances
 
-- A: id MUST represent the reference time of the forecast model, the value of the id parameter MUST be on the ISO-8601 format.
+- A: id SHALL represent the reference time of the forecast model, the value of the id parameter MUST be on the ISO-8601 format.
 - B: CRS must be WGS 84: http://www.opengis.net/def/crs/OGC/1.3/CRS84.
 - C: All temporal values are on ISO-8601 format: http://www.opengis.net/def/uom/ISO-8601/0/Gregorian.
 - D: temporal extent MUST describe the start and end of the model forecast run that this instance represent.
@@ -49,8 +51,5 @@ A profile for an EDR service that has weather forecast timeseries collection. A 
 
 #### /collections/data_queries
 
-- A: Data queries on the collection level is not supported.
-
-#### /collections/<collectionid>/instances/<instanceid>/data_queries
-
-- A: Each collection support only one type of vertical levels(meter, model level, pressure). This vertical level is described in the /collection.... Specify z parameter in this vertical level type.
+- A: Only point data queries is supported.
+- B: Each collection support only one type of vertical levels(meter, model level, pressure). This vertical level is described in the /collection.... Specify z parameter in this vertical level type.
