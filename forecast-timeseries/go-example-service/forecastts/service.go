@@ -265,14 +265,20 @@ func (h *Handler) GetDataForPoint(ctx echo.Context, collectionId CollectionId, p
 			T *StringValuesAxis `json:"t,omitempty"`
 
 			// X Simple axis with numeric values
-			X NumericAxis `json:"x"`
+			X MettsnumericValuesAxis `json:"x"`
 
 			// Y Simple axis with numeric values
-			Y NumericAxis `json:"y"`
+			Y MettsnumericValuesAxis `json:"y"`
 
 			// Z Simple axis with numeric values
-			Z *NumericAxis `json:"z,omitempty"`
-		}{},
+			Z *MettsnumericValuesAxis `json:"z,omitempty"`
+		}{
+			X: MettsnumericValuesAxis{Values: &[]float32{60.0}},
+			Y: MettsnumericValuesAxis{Values: &[]float32{11.0}},
+			T: &StringValuesAxis{
+				Values: []string{"2024-01-01"},
+			},
+		},
 		Referencing: &[]ReferenceSystemConnection{
 			{
 				Coordinates: []string{"x", "y"},

@@ -983,6 +983,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/collection'
+    mettsnumericValuesAxis:
+      description: Custom, simplified values axies for forecast timeseries profile.
+      properties:
+        values:
+          type: array
+          items:
+            type: number
     valuesAxisBase:
       description: Base schema for values-based axis schemas
       properties:
@@ -1006,38 +1013,6 @@ components:
           minItems: 2
       required:
         - values
-    numericValuesAxis:
-      description: Axis defined by list of numeric axis values and optional bounds
-      allOf:
-        - $ref: '#/components/schemas/valuesAxisBase'
-        - properties:
-            values:
-              items:
-                type: number
-            bounds:
-              items:
-                type: number
-          additionalProperties: false
-    numericRegularlySpacedAxis:
-      description: A regularly-spaced numeric axis
-      properties:
-        start:
-          type: number
-        stop:
-          type: number
-        num:
-          type: integer
-          minimum: 1
-      required:
-        - start
-        - stop
-        - num
-      additionalProperties: false
-    numericAxis:
-      description: Simple axis with numeric values
-      oneOf:
-        - $ref: '#/components/schemas/numericValuesAxis'
-        - $ref: '#/components/schemas/numericRegularlySpacedAxis'
     stringValuesAxis:
       description: Simple axis with string values (e.g. time strings)
       allOf:
@@ -1134,11 +1109,11 @@ components:
           description: 'Grid domain: x and y are required, z and t optional'
           properties:
             x:
-              $ref: '#/components/schemas/numericAxis'
+              $ref: '#/components/schemas/mettsnumericValuesAxis'
             'y':
-              $ref: '#/components/schemas/numericAxis'
+              $ref: '#/components/schemas/mettsnumericValuesAxis'
             z:
-              $ref: '#/components/schemas/numericAxis'
+              $ref: '#/components/schemas/mettsnumericValuesAxis'
             t:
               $ref: '#/components/schemas/stringValuesAxis'
           required:

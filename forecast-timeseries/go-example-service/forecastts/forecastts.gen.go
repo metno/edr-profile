@@ -195,14 +195,14 @@ type Domain struct {
 		// T Simple axis with string values (e.g. time strings)
 		T *StringValuesAxis `json:"t,omitempty"`
 
-		// X Simple axis with numeric values
-		X NumericAxis `json:"x"`
+		// X Custom, simplified values axies for forecast timeseries profile.
+		X MettsnumericValuesAxis `json:"x"`
 
-		// Y Simple axis with numeric values
-		Y NumericAxis `json:"y"`
+		// Y Custom, simplified values axies for forecast timeseries profile.
+		Y MettsnumericValuesAxis `json:"y"`
 
-		// Z Simple axis with numeric values
-		Z *NumericAxis `json:"z,omitempty"`
+		// Z Custom, simplified values axies for forecast timeseries profile.
+		Z *MettsnumericValuesAxis `json:"z,omitempty"`
 	} `json:"axes"`
 	DomainType  *string                      `json:"domainType,omitempty"`
 	Referencing *[]ReferenceSystemConnection `json:"referencing,omitempty"`
@@ -493,6 +493,11 @@ type LocationsDataQuery = DataQuery
 // LocationsLink defines model for locationsLink.
 type LocationsLink = Link
 
+// MettsnumericValuesAxis Custom, simplified values axies for forecast timeseries profile.
+type MettsnumericValuesAxis struct {
+	Values *[]float32 `json:"values,omitempty"`
+}
+
 // MultilinestringGeoJSON defines model for multilinestringGeoJSON.
 type MultilinestringGeoJSON struct {
 	Coordinates [][][]float32              `json:"coordinates"`
@@ -566,26 +571,6 @@ type NumberMatched = int
 // If the value is provided, the value shall be identical to the number
 // of items in the "features" array.
 type NumberReturned = int
-
-// NumericAxis Simple axis with numeric values
-type NumericAxis struct {
-	union json.RawMessage
-}
-
-// NumericRegularlySpacedAxis A regularly-spaced numeric axis
-type NumericRegularlySpacedAxis struct {
-	Num   int     `json:"num"`
-	Start float32 `json:"start"`
-	Stop  float32 `json:"stop"`
-}
-
-// NumericValuesAxis defines model for numericValuesAxis.
-type NumericValuesAxis struct {
-	Bounds      *interface{} `json:"bounds,omitempty"`
-	Coordinates *[]string    `json:"coordinates,omitempty"`
-	DataType    *string      `json:"dataType,omitempty"`
-	Values      interface{}  `json:"values"`
-}
 
 // ObservedProperty A definition of the quantity being measured.
 type ObservedProperty struct {
@@ -1742,68 +1727,6 @@ func (t *NdArray) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	return err
-}
-
-// AsNumericValuesAxis returns the union data inside the NumericAxis as a NumericValuesAxis
-func (t NumericAxis) AsNumericValuesAxis() (NumericValuesAxis, error) {
-	var body NumericValuesAxis
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromNumericValuesAxis overwrites any union data inside the NumericAxis as the provided NumericValuesAxis
-func (t *NumericAxis) FromNumericValuesAxis(v NumericValuesAxis) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeNumericValuesAxis performs a merge with any union data inside the NumericAxis, using the provided NumericValuesAxis
-func (t *NumericAxis) MergeNumericValuesAxis(v NumericValuesAxis) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsNumericRegularlySpacedAxis returns the union data inside the NumericAxis as a NumericRegularlySpacedAxis
-func (t NumericAxis) AsNumericRegularlySpacedAxis() (NumericRegularlySpacedAxis, error) {
-	var body NumericRegularlySpacedAxis
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromNumericRegularlySpacedAxis overwrites any union data inside the NumericAxis as the provided NumericRegularlySpacedAxis
-func (t *NumericAxis) FromNumericRegularlySpacedAxis(v NumericRegularlySpacedAxis) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeNumericRegularlySpacedAxis performs a merge with any union data inside the NumericAxis, using the provided NumericRegularlySpacedAxis
-func (t *NumericAxis) MergeNumericRegularlySpacedAxis(v NumericRegularlySpacedAxis) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t NumericAxis) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *NumericAxis) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
 	return err
 }
 
