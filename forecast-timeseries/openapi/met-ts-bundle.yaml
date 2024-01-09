@@ -1050,30 +1050,6 @@ components:
               items:
                 type: string
           additionalProperties: false
-    tupleValuesAxis:
-      description: Tuple-based axis
-      allOf:
-        - $ref: '#/components/schemas/valuesAxisBase'
-        - properties:
-            dataType:
-              type: string
-              enum:
-                - tuple
-            values:
-              items:
-                description: A tuple of axis values (numbers or strings)
-                type: array
-                items:
-                  anyOf:
-                    - type: number
-                    - type: string
-                minItems: 2
-            coordinates: {}
-          required:
-            - dataType
-            - values
-            - coordinates
-          additionalProperties: false
     i18n:
       type: object
       description: Object representing an internationalised string.
@@ -1155,30 +1131,19 @@ components:
           type: string
         axes:
           type: object
-          oneOf:
-            - description: 'Grid domain: x and y are required, z and t optional'
-              properties:
-                x:
-                  $ref: '#/components/schemas/numericAxis'
-                'y':
-                  $ref: '#/components/schemas/numericAxis'
-                z:
-                  $ref: '#/components/schemas/numericAxis'
-                t:
-                  $ref: '#/components/schemas/stringValuesAxis'
-              required:
-                - x
-                - 'y'
-            - description: 'Trajectory domain: mandatory composite axis and optional z axis'
-              properties:
-                axes:
-                  properties:
-                    composite:
-                      $ref: '#/components/schemas/tupleValuesAxis'
-                    z:
-                      $ref: '#/components/schemas/numericAxis'
-                  required:
-                    - composite
+          description: 'Grid domain: x and y are required, z and t optional'
+          properties:
+            x:
+              $ref: '#/components/schemas/numericAxis'
+            'y':
+              $ref: '#/components/schemas/numericAxis'
+            z:
+              $ref: '#/components/schemas/numericAxis'
+            t:
+              $ref: '#/components/schemas/stringValuesAxis'
+          required:
+            - x
+            - 'y'
         referencing:
           type: array
           items:
@@ -1186,62 +1151,6 @@ components:
       required:
         - type
         - axes
-    ndArray:
-      type: object
-      description: Object representing a multidimensional (>= 0D) array with named axes, encoded as a flat one-dimensional array in row-major order
-      properties:
-        type:
-          type: string
-          enum:
-            - NdArray
-        dataType:
-          enum:
-            - float
-            - integer
-            - string
-        shape:
-          type: array
-          items:
-            type: number
-        axisNames:
-          type: array
-          items:
-            type: string
-          uniqueItems: true
-        values:
-          type: array
-          items:
-            type: number
-            nullable: true
-          minItems: 1
-      oneOf:
-        - properties:
-            values:
-              items:
-                type: number
-              nullable: true
-        - properties:
-            values:
-              items:
-                type: integer
-              nullable: true
-        - properties:
-            values:
-              items:
-                type: string
-              nullable: true
-        - properties:
-            shape:
-              minItems: 1
-            axisNames:
-              minItems: 1
-          required:
-            - shape
-            - axisNames
-      required:
-        - type
-        - dataType
-        - values
     observedProperty:
       type: object
       description: A definition of the quantity being measured.
@@ -1323,6 +1232,62 @@ components:
       required:
         - type
         - observedProperty
+    ndArray:
+      type: object
+      description: Object representing a multidimensional (>= 0D) array with named axes, encoded as a flat one-dimensional array in row-major order
+      properties:
+        type:
+          type: string
+          enum:
+            - NdArray
+        dataType:
+          enum:
+            - float
+            - integer
+            - string
+        shape:
+          type: array
+          items:
+            type: number
+        axisNames:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        values:
+          type: array
+          items:
+            type: number
+            nullable: true
+          minItems: 1
+      oneOf:
+        - properties:
+            values:
+              items:
+                type: number
+              nullable: true
+        - properties:
+            values:
+              items:
+                type: integer
+              nullable: true
+        - properties:
+            values:
+              items:
+                type: string
+              nullable: true
+        - properties:
+            shape:
+              minItems: 1
+            axisNames:
+              minItems: 1
+          required:
+            - shape
+            - axisNames
+      required:
+        - type
+        - dataType
+        - values
     coverageJSON:
       type: object
       title: CoverageJSON
@@ -1335,30 +1300,8 @@ components:
           type: string
           enum:
             - Coverage
-            - CoverageCollection
-            - Domain
-        domainType:
-          type: string
-        coverages:
-          type: array
-          items:
-            type: object
-            required:
-              - type
-              - domain
-              - ranges
-            properties:
-              type:
-                description: Coverage domain type
-                type: string
-                enum:
-                  - Coverage
-              domain:
-                $ref: '#/components/schemas/domain'
-              ranges:
-                additionalProperties:
-                  type: object
-                  $ref: '#/components/schemas/ndArray'
+        domain:
+          $ref: '#/components/schemas/domain'
         parameters:
           additionalProperties:
             type: object
@@ -1368,11 +1311,6 @@ components:
           additionalProperties:
             type: object
             $ref: '#/components/schemas/ndArray'
-        referencing:
-          type: array
-          items:
-            $ref: '#/components/schemas/referenceSystemConnection'
-          minItems: 1
     pointGeoJSON:
       type: object
       required:

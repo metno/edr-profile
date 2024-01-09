@@ -13,16 +13,9 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-// Defines values for CoverageJSONCoveragesType.
-const (
-	CoverageJSONCoveragesTypeCoverage CoverageJSONCoveragesType = "Coverage"
-)
-
 // Defines values for CoverageJSONType.
 const (
-	CoverageJSONTypeCoverage           CoverageJSONType = "Coverage"
-	CoverageJSONTypeCoverageCollection CoverageJSONType = "CoverageCollection"
-	CoverageJSONTypeDomain             CoverageJSONType = "Domain"
+	Coverage CoverageJSONType = "Coverage"
 )
 
 // Defines values for DomainType.
@@ -100,11 +93,6 @@ const (
 	Polygon PolygonGeoJSONType = "Polygon"
 )
 
-// Defines values for TupleValuesAxisDataType.
-const (
-	Tuple TupleValuesAxisDataType = "tuple"
-)
-
 // DataQuery Property to contain any extra metadata information that is specific to an individual data query
 type DataQuery struct {
 	// CrsDetails List of key/value definitions for the CRS's supported by the Position query.  The key is the query parameter and the value is the Well Known Text description
@@ -179,25 +167,14 @@ type ConfClasses struct {
 
 // CoverageJSON A geospatial coverage interchange format based on JavaScript Object Notation (JSON)
 type CoverageJSON struct {
-	Coverages *[]struct {
-		// Domain A Domain, which defines a set of positions and their extent in one or more referencing systems
-		Domain Domain             `json:"domain"`
-		Ranges map[string]NdArray `json:"ranges"`
-
-		// Type Coverage domain type
-		Type CoverageJSONCoveragesType `json:"type"`
-	} `json:"coverages,omitempty"`
-	DomainType  *string                      `json:"domainType,omitempty"`
-	Parameters  *map[string]Parameter        `json:"parameters,omitempty"`
-	Ranges      *map[string]NdArray          `json:"ranges,omitempty"`
-	Referencing *[]ReferenceSystemConnection `json:"referencing,omitempty"`
+	// Domain A Domain, which defines a set of positions and their extent in one or more referencing systems
+	Domain     *Domain               `json:"domain,omitempty"`
+	Parameters *map[string]Parameter `json:"parameters,omitempty"`
+	Ranges     *map[string]NdArray   `json:"ranges,omitempty"`
 
 	// Type Coverage domain type
 	Type CoverageJSONType `json:"type"`
 }
-
-// CoverageJSONCoveragesType Coverage domain type
-type CoverageJSONCoveragesType string
 
 // CoverageJSONType Coverage domain type
 type CoverageJSONType string
@@ -213,41 +190,23 @@ type CrsObject struct {
 
 // Domain A Domain, which defines a set of positions and their extent in one or more referencing systems
 type Domain struct {
-	Axes        Domain_Axes                  `json:"axes"`
-	DomainType  *string                      `json:"domainType,omitempty"`
-	Referencing *[]ReferenceSystemConnection `json:"referencing,omitempty"`
-	Type        DomainType                   `json:"type"`
-}
+	// Axes Grid domain: x and y are required, z and t optional
+	Axes struct {
+		// T Simple axis with string values (e.g. time strings)
+		T *StringValuesAxis `json:"t,omitempty"`
 
-// DomainAxes0 Grid domain: x and y are required, z and t optional
-type DomainAxes0 struct {
-	// T Simple axis with string values (e.g. time strings)
-	T *StringValuesAxis `json:"t,omitempty"`
+		// X Simple axis with numeric values
+		X NumericAxis `json:"x"`
 
-	// X Simple axis with numeric values
-	X NumericAxis `json:"x"`
-
-	// Y Simple axis with numeric values
-	Y NumericAxis `json:"y"`
-
-	// Z Simple axis with numeric values
-	Z *NumericAxis `json:"z,omitempty"`
-}
-
-// DomainAxes1 Trajectory domain: mandatory composite axis and optional z axis
-type DomainAxes1 struct {
-	Axes *struct {
-		// Composite Tuple-based axis
-		Composite TupleValuesAxis `json:"composite"`
+		// Y Simple axis with numeric values
+		Y NumericAxis `json:"y"`
 
 		// Z Simple axis with numeric values
 		Z *NumericAxis `json:"z,omitempty"`
-	} `json:"axes,omitempty"`
-}
-
-// Domain_Axes defines model for Domain.Axes.
-type Domain_Axes struct {
-	union json.RawMessage
+	} `json:"axes"`
+	DomainType  *string                      `json:"domainType,omitempty"`
+	Referencing *[]ReferenceSystemConnection `json:"referencing,omitempty"`
+	Type        DomainType                   `json:"type"`
 }
 
 // DomainType defines model for Domain.Type.
@@ -857,18 +816,6 @@ type StringValuesAxis struct {
 	Values      interface{}  `json:"values"`
 }
 
-// TupleValuesAxis defines model for tupleValuesAxis.
-type TupleValuesAxis struct {
-	// Bounds Optional axis bounds. Shall be twice as long (and same data type) as "values"
-	Bounds      *[]interface{}          `json:"bounds,omitempty"`
-	Coordinates interface{}             `json:"coordinates"`
-	DataType    TupleValuesAxisDataType `json:"dataType"`
-	Values      interface{}             `json:"values"`
-}
-
-// TupleValuesAxisDataType defines model for TupleValuesAxis.DataType.
-type TupleValuesAxisDataType string
-
 // Unit The units of measure
 type Unit struct {
 	Id *string `json:"id,omitempty"`
@@ -1115,68 +1062,6 @@ type GetDataForPointParams struct {
 type GetRequirementsClassesParams struct {
 	// F format to return the data response in
 	F *F `form:"f,omitempty" json:"f,omitempty"`
-}
-
-// AsDomainAxes0 returns the union data inside the Domain_Axes as a DomainAxes0
-func (t Domain_Axes) AsDomainAxes0() (DomainAxes0, error) {
-	var body DomainAxes0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromDomainAxes0 overwrites any union data inside the Domain_Axes as the provided DomainAxes0
-func (t *Domain_Axes) FromDomainAxes0(v DomainAxes0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeDomainAxes0 performs a merge with any union data inside the Domain_Axes, using the provided DomainAxes0
-func (t *Domain_Axes) MergeDomainAxes0(v DomainAxes0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsDomainAxes1 returns the union data inside the Domain_Axes as a DomainAxes1
-func (t Domain_Axes) AsDomainAxes1() (DomainAxes1, error) {
-	var body DomainAxes1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromDomainAxes1 overwrites any union data inside the Domain_Axes as the provided DomainAxes1
-func (t *Domain_Axes) FromDomainAxes1(v DomainAxes1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeDomainAxes1 performs a merge with any union data inside the Domain_Axes, using the provided DomainAxes1
-func (t *Domain_Axes) MergeDomainAxes1(v DomainAxes1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t Domain_Axes) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *Domain_Axes) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
 }
 
 // AsExtentSpatialBbox0 returns the union data inside the Extent_Spatial_Bbox_Item as a ExtentSpatialBbox0

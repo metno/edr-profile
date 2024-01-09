@@ -214,9 +214,90 @@ func (h *Handler) GetDataForPoint(ctx echo.Context, collectionId CollectionId, p
 	// if point.Z != nil {
 	// 	coords = append(coords, float32(*point.Z))
 	// }
-	ret := PointGeoJSON{
-		Type:        Point,
-		Coordinates: []float32{10, 60},
+	// ret := PointGeoJSON{
+	// 	Type:        Point,
+	// 	Coordinates: []float32{10, 60},
+	// }
+
+	observedPropertyID := "http://vocab.nerc.ac.uk/standard_name/air_temperature/"
+
+	parameters := map[string]Parameter{
+		"air_temperature": {
+			Type: "Parameter",
+			Description: &I18n{
+				"en": "air_temperature, cf-convention?",
+			},
+			Unit: &Unit{
+				Label: &I18n{
+					"en": "Kelvin",
+				},
+			},
+			ObservedProperty: ObservedProperty{
+				Id: &observedPropertyID,
+				Label: I18n{
+					"en": "Air temperature is the bulk temperature of the air, not the surface (skin) temperature.",
+				},
+			},
+		},
+	}
+
+	temporalRefSys := ReferenceSystem{
+		Type: "TemporalRS",
+	}
+	temporalRefSys.FromReferenceSystem0(ReferenceSystem0{
+		Calendar: "Gregorian",
+	})
+
+	spatialRefSys := ReferenceSystem{
+		Type: "GeographicCRS",
+	}
+	spatialRefSysID := "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+	spatialRefSys.FromReferenceSystem1(ReferenceSystem1{
+		Id: &spatialRefSysID,
+	})
+
+	domainType := "Point"
+	domain := Domain{
+		DomainType: &domainType,
+		Type:       "Domain",
+		Axes: struct {
+			// T Simple axis with string values (e.g. time strings)
+			T *StringValuesAxis `json:"t,omitempty"`
+
+			// X Simple axis with numeric values
+			X NumericAxis `json:"x"`
+
+			// Y Simple axis with numeric values
+			Y NumericAxis `json:"y"`
+
+			// Z Simple axis with numeric values
+			Z *NumericAxis `json:"z,omitempty"`
+		}{},
+		Referencing: &[]ReferenceSystemConnection{
+			{
+				Coordinates: []string{"x", "y"},
+				System:      spatialRefSys,
+			},
+			{
+				Coordinates: []string{"t"},
+				System:      temporalRefSys,
+			},
+		},
+	}
+
+	ranges := map[string]NdArray{
+		"air_temperature": {
+			Type:     "NdArray",
+			DataType: "float",
+			Values:   []float32{23.8},
+		},
+	}
+
+	ret := &CoverageJSON{
+		Type:       "Coverage",
+		Parameters: &parameters,
+		Domain:     &domain,
+		Ranges:     &ranges,
 	}
 
 	return writer(params.F, ctx)(http.StatusOK, &ret)
