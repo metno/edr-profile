@@ -37,9 +37,9 @@ A profile for an EDR service that has weather forecast timeseries collection. A 
 #### /collections
 
 - A: temporal extent SHALL either be null or specify the start and end time that cover all instances of this collection.
-- B: parameter_names includes all parameters mentioned in at least one of the instances. No guarantee that a paremter will be available for all instances.
+- B: parameter_names includes all parameters mentioned in at least one of the instances. No guarantee that a parameter will be available for all instances.
 
-#### /collections/<collectionid>/instances
+#### /collections/<collectionid>/instances/<instanceid>/
 
 - A: id SHALL represent the reference time of the forecast model, the value of the id parameter MUST be on the ISO-8601 format.
 - B: CRS must be WGS 84: http://www.opengis.net/def/crs/OGC/1.3/CRS84.
@@ -51,5 +51,11 @@ A profile for an EDR service that has weather forecast timeseries collection. A 
 
 #### /collections/data_queries
 
-- A: Only point data queries is supported.
-- B: Each collection support only one type of vertical levels(meter, model level, pressure). This vertical level is described in the /collection.... Specify z parameter in this vertical level type.
+- A: Only position and location data queries are supported.
+- B: Each collection supports a maximum of one type of vertical level(meter, model level, pressure). This vertical level is described in the vertical property of the extent in a collection response and in the CoverageJSON data query response as axis z in the domain object.
+
+### Requirement B.1
+
+#### /collections/response
+
+- A: The response to a data query request SHALL be CoverageJSON with domainType PointSeries.

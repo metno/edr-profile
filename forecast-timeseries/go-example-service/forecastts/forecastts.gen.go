@@ -18,6 +18,11 @@ const (
 	Coverage CoverageJSONType = "Coverage"
 )
 
+// Defines values for DomainDomainType.
+const (
+	PointSeries DomainDomainType = "PointSeries"
+)
+
 // Defines values for DomainType.
 const (
 	DomainTypeDomain DomainType = "Domain"
@@ -204,10 +209,13 @@ type Domain struct {
 		// Z Custom, simplified values axies for forecast timeseries profile.
 		Z *MettsnumericValuesAxis `json:"z,omitempty"`
 	} `json:"axes"`
-	DomainType  *string                      `json:"domainType,omitempty"`
+	DomainType  *DomainDomainType            `json:"domainType,omitempty"`
 	Referencing *[]ReferenceSystemConnection `json:"referencing,omitempty"`
 	Type        DomainType                   `json:"type"`
 }
+
+// DomainDomainType defines model for Domain.DomainType.
+type DomainDomainType string
 
 // DomainType defines model for Domain.Type.
 type DomainType string
@@ -413,6 +421,12 @@ type GeometrycollectionGeoJSONType string
 
 // I18n Object representing an internationalised string.
 type I18n map[string]string
+
+// Instances defines model for instances.
+type Instances struct {
+	Instances []Collection `json:"instances"`
+	Links     []Link       `json:"links"`
+}
 
 // ItemsDataQuery Property to contain any extra metadata information that is specific to an individual data queries
 type ItemsDataQuery struct {
@@ -761,30 +775,11 @@ type ReferenceSystem0 struct {
 	TimeScale *string `json:"timeScale,omitempty"`
 }
 
-// ReferenceSystem1 An identifier-based reference system
+// ReferenceSystem1 Geographic Coordinate Reference Systems
 type ReferenceSystem1 struct {
 	// Description Object representing an internationalised string.
 	Description *I18n   `json:"description,omitempty"`
 	Id          *string `json:"id,omitempty"`
-	Identifiers *map[string]struct {
-		// Description Object representing an internationalised string.
-		Description *I18n   `json:"description,omitempty"`
-		Id          *string `json:"id,omitempty"`
-
-		// Label Object representing an internationalised string.
-		Label I18n `json:"label"`
-	} `json:"identifiers,omitempty"`
-
-	// Label Object representing an internationalised string.
-	Label         *I18n `json:"label,omitempty"`
-	TargetConcept struct {
-		// Description Object representing an internationalised string.
-		Description *I18n   `json:"description,omitempty"`
-		Id          *string `json:"id,omitempty"`
-
-		// Label Object representing an internationalised string.
-		Label I18n `json:"label"`
-	} `json:"targetConcept"`
 }
 
 // ReferenceSystemConnection Reference System Connection object: connects coordinates to reference systems
@@ -891,6 +886,9 @@ type Datetime = string
 // F defines model for f.
 type F = string
 
+// InstanceId defines model for instanceId.
+type InstanceId = string
+
 // ParameterName defines model for parameter-name.
 type ParameterName = string
 
@@ -968,6 +966,83 @@ type ListCollectionsParamsBbox1 = []float32
 
 // GetQueriesParams defines parameters for GetQueries.
 type GetQueriesParams struct {
+	// F format to return the data response in
+	F *F `form:"f,omitempty" json:"f,omitempty"`
+}
+
+// GetCollectionInstancesParams defines parameters for GetCollectionInstances.
+type GetCollectionInstancesParams struct {
+	// F format to return the data response in
+	F *F `form:"f,omitempty" json:"f,omitempty"`
+}
+
+// GetInstanceDataForPointParams defines parameters for GetInstanceDataForPoint.
+type GetInstanceDataForPointParams struct {
+	// Coords location(s) to return data for, the coordinates are defined by a Well Known Text
+	// (wkt) string. to retrieve a single location :
+	//
+	// POINT(x y) i.e. POINT(0 51.48) for Greenwich, London
+	//
+	// And for a list of locations
+	//
+	// MULTIPOINT((x y),(x1 y1),(x2 y2),(x3 y3))
+	//
+	// i.e.
+	// MULTIPOINT((38.9 -77),(48.85 2.35),(39.92 116.38),(-35.29 149.1),(51.5 -0.1))
+	//
+	// see http://portal.opengeospatial.org/files/?artifact_id=25355 and
+	// https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry
+	//
+	// the coordinate values will depend on the CRS parameter, if this is not defined
+	// the values will be assumed to WGS84 values (i.e x=longitude and y=latitude)
+	Coords PositionCoords `form:"coords" json:"coords"`
+
+	// Z Define the vertical level to return data from
+	// i.e. z=level
+	//
+	// for instance if the 850hPa pressure level is being queried
+	//
+	// z=850
+	//
+	// or a range to return data for all levels between and including 2 defined levels
+	// i.e. z=minimum value/maximum value
+	//
+	// for instance if all values between and including 10m and 100m
+	//
+	// z=10/100
+	//
+	// finally a list of height values can be specified
+	// i.e. z=value1,value2,value3
+	//
+	// for instance if values at 2m, 10m and 80m are required
+	//
+	// z=2,10,80
+	//
+	// An Arithmetic sequence using Recurring height intervals, the difference is the number of recurrences is defined at the start
+	// and the amount to increment the height by is defined at the end
+	//
+	// i.e. z=Rn/min height/height interval
+	//
+	// so if the request was for 20 height levels 50m apart starting at 100m:
+	//
+	// z=R20/100/50
+	//
+	// When not specified data from all available heights SHOULD be returned
+	Z *Z `form:"z,omitempty" json:"z,omitempty"`
+
+	// Datetime Either a date-time or an interval. Date and time expressions adhere to RFC 3339. Intervals may be bounded or half-bounded (double-dots at start or end).
+	// Examples:
+	// * A date-time: "2018-02-12T23:20:50Z" * A bounded interval: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z" * Half-bounded intervals: "2018-02-12T00:00:00Z/.." or "../2018-03-18T12:31:12Z"
+	// Only resources that have a temporal property that intersects the value of `datetime` are selected.
+	// If a feature has multiple temporal properties, it is the decision of the server whether only a single temporal property is used to determine the extent or all relevant temporal properties.
+	Datetime *Datetime `form:"datetime,omitempty" json:"datetime,omitempty"`
+
+	// ParameterName comma delimited list of parameters to retrieve data for.  Valid parameters are listed in the collections metadata
+	ParameterName *ParameterName `form:"parameter-name,omitempty" json:"parameter-name,omitempty"`
+
+	// Crs identifier (id) of the coordinate system to return data in list of valid crs identifiers for the chosen collection are defined in the metadata responses.  If not supplied the coordinate reference system will default to WGS84.
+	Crs *Crs `form:"crs,omitempty" json:"crs,omitempty"`
+
 	// F format to return the data response in
 	F *F `form:"f,omitempty" json:"f,omitempty"`
 }
@@ -2606,6 +2681,12 @@ type ServerInterface interface {
 	// List query types supported by the collection
 	// (GET /collections/{collectionId})
 	GetQueries(ctx echo.Context, collectionId CollectionId, params GetQueriesParams) error
+	// List data instances of {collectionId}
+	// (GET /collections/{collectionId}/instances)
+	GetCollectionInstances(ctx echo.Context, collectionId CollectionId, params GetCollectionInstancesParams) error
+	// Query end point for position queries of instance {instanceId} of collection {collectionId}
+	// (GET /collections/{collectionId}/instances/{instanceId}/position)
+	GetInstanceDataForPoint(ctx echo.Context, collectionId CollectionId, instanceId InstanceId, params GetInstanceDataForPointParams) error
 	// Query end point for position queries  of collection {collectionId}
 	// (GET /collections/{collectionId}/position)
 	GetDataForPoint(ctx echo.Context, collectionId CollectionId, params GetDataForPointParams) error
@@ -2691,6 +2772,99 @@ func (w *ServerInterfaceWrapper) GetQueries(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetQueries(ctx, collectionId, params)
+	return err
+}
+
+// GetCollectionInstances converts echo context to params.
+func (w *ServerInterfaceWrapper) GetCollectionInstances(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "collectionId" -------------
+	var collectionId CollectionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "collectionId", ctx.Param("collectionId"), &collectionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter collectionId: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetCollectionInstancesParams
+	// ------------- Optional query parameter "f" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "f", ctx.QueryParams(), &params.F)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter f: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetCollectionInstances(ctx, collectionId, params)
+	return err
+}
+
+// GetInstanceDataForPoint converts echo context to params.
+func (w *ServerInterfaceWrapper) GetInstanceDataForPoint(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "collectionId" -------------
+	var collectionId CollectionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "collectionId", ctx.Param("collectionId"), &collectionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter collectionId: %s", err))
+	}
+
+	// ------------- Path parameter "instanceId" -------------
+	var instanceId InstanceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "instanceId", ctx.Param("instanceId"), &instanceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter instanceId: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetInstanceDataForPointParams
+	// ------------- Required query parameter "coords" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "coords", ctx.QueryParams(), &params.Coords)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter coords: %s", err))
+	}
+
+	// ------------- Optional query parameter "z" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "z", ctx.QueryParams(), &params.Z)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter z: %s", err))
+	}
+
+	// ------------- Optional query parameter "datetime" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "datetime", ctx.QueryParams(), &params.Datetime)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter datetime: %s", err))
+	}
+
+	// ------------- Optional query parameter "parameter-name" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "parameter-name", ctx.QueryParams(), &params.ParameterName)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter parameter-name: %s", err))
+	}
+
+	// ------------- Optional query parameter "crs" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "crs", ctx.QueryParams(), &params.Crs)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter crs: %s", err))
+	}
+
+	// ------------- Optional query parameter "f" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "f", ctx.QueryParams(), &params.F)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter f: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetInstanceDataForPoint(ctx, collectionId, instanceId, params)
 	return err
 }
 
@@ -2803,6 +2977,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/", wrapper.GetLandingPage)
 	router.GET(baseURL+"/collections", wrapper.ListCollections)
 	router.GET(baseURL+"/collections/:collectionId", wrapper.GetQueries)
+	router.GET(baseURL+"/collections/:collectionId/instances", wrapper.GetCollectionInstances)
+	router.GET(baseURL+"/collections/:collectionId/instances/:instanceId/position", wrapper.GetInstanceDataForPoint)
 	router.GET(baseURL+"/collections/:collectionId/position", wrapper.GetDataForPoint)
 	router.GET(baseURL+"/conformance", wrapper.GetRequirementsClasses)
 

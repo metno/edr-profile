@@ -75,6 +75,21 @@ paths:
           $ref: '#/components/responses/collection'
         default:
           $ref: '#/components/responses/exception'
+  /collections/{collectionId}/instances:
+    get:
+      tags:
+        - Instance metadata
+      summary: List data instances of {collectionId}
+      description: This will provide list of the avalable instances of the collection Use content negotiation to request HTML or JSON.
+      operationId: getCollectionInstances
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/instances'
+        default:
+          $ref: '#/components/responses/exception'
   /collections/{collectionId}/position:
     get:
       tags:
@@ -84,6 +99,37 @@ paths:
       operationId: GetDataForPoint
       parameters:
         - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/positionCoords'
+        - $ref: '#/components/parameters/z'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/parameter-name'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '202':
+          $ref: '#/components/responses/202'
+        '308':
+          $ref: '#/components/responses/308'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '413':
+          $ref: '#/components/responses/413'
+        default:
+          $ref: '#/components/responses/exception'
+  /collections/{collectionId}/instances/{instanceId}/position:
+    get:
+      tags:
+        - Instance data queries
+      summary: Query end point for position queries of instance {instanceId} of collection {collectionId}
+      description: Query end point for position queries
+      operationId: GetInstanceDataForPoint
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/instanceId'
         - $ref: '#/components/parameters/positionCoords'
         - $ref: '#/components/parameters/z'
         - $ref: '#/components/parameters/datetime'
@@ -254,6 +300,13 @@ components:
       description: identifier (id) of the coordinate system to return data in list of valid crs identifiers for the chosen collection are defined in the metadata responses.  If not supplied the coordinate reference system will default to WGS84.
       required: false
       example: native
+      schema:
+        type: string
+    instanceId:
+      name: instanceId
+      in: path
+      description: Identifier (id) of a specific instance of a collection
+      required: true
       schema:
         type: string
   schemas:
@@ -983,6 +1036,36 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/collection'
+    instances:
+      type: object
+      required:
+        - links
+        - instances
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+          example:
+            - href: https://example.org/edr/collections/the_collection_id/instances
+              hreflang: en
+              rel: self
+              type: application/json
+            - href: https://example.org/edr/collections/the_collection_id/instances?f=html
+              hreflang: en
+              rel: alternate
+              type: text/html
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/collection'
+    mettsnumericValuesAxis:
+      description: Custom, simplified values axies for forecast timeseries profile.
+      properties:
+        values:
+          type: array
+          items:
+            type: number
     valuesAxisBase:
       description: Base schema for values-based axis schemas
       properties:
@@ -1006,38 +1089,6 @@ components:
           minItems: 2
       required:
         - values
-    numericValuesAxis:
-      description: Axis defined by list of numeric axis values and optional bounds
-      allOf:
-        - $ref: '#/components/schemas/valuesAxisBase'
-        - properties:
-            values:
-              items:
-                type: number
-            bounds:
-              items:
-                type: number
-          additionalProperties: false
-    numericRegularlySpacedAxis:
-      description: A regularly-spaced numeric axis
-      properties:
-        start:
-          type: number
-        stop:
-          type: number
-        num:
-          type: integer
-          minimum: 1
-      required:
-        - start
-        - stop
-        - num
-      additionalProperties: false
-    numericAxis:
-      description: Simple axis with numeric values
-      oneOf:
-        - $ref: '#/components/schemas/numericValuesAxis'
-        - $ref: '#/components/schemas/numericRegularlySpacedAxis'
     stringValuesAxis:
       description: Simple axis with string values (e.g. time strings)
       allOf:
@@ -1049,30 +1100,6 @@ components:
             bounds:
               items:
                 type: string
-          additionalProperties: false
-    tupleValuesAxis:
-      description: Tuple-based axis
-      allOf:
-        - $ref: '#/components/schemas/valuesAxisBase'
-        - properties:
-            dataType:
-              type: string
-              enum:
-                - tuple
-            values:
-              items:
-                description: A tuple of axis values (numbers or strings)
-                type: array
-                items:
-                  anyOf:
-                    - type: number
-                    - type: string
-                minItems: 2
-            coordinates: {}
-          required:
-            - dataType
-            - values
-            - coordinates
           additionalProperties: false
     i18n:
       type: object
@@ -1095,40 +1122,12 @@ components:
               type: string
           required:
             - calendar
-        - description: An identifier-based reference system
+        - description: Geographic Coordinate Reference Systems
           properties:
             id:
               type: string
-            label:
-              $ref: '#/components/schemas/i18n'
             description:
               $ref: '#/components/schemas/i18n'
-            targetConcept:
-              type: object
-              properties:
-                id:
-                  type: string
-                label:
-                  $ref: '#/components/schemas/i18n'
-                description:
-                  $ref: '#/components/schemas/i18n'
-              required:
-                - label
-            identifiers:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  label:
-                    $ref: '#/components/schemas/i18n'
-                  description:
-                    $ref: '#/components/schemas/i18n'
-                required:
-                  - label
-          required:
-            - targetConcept
     referenceSystemConnection:
       description: 'Reference System Connection object: connects coordinates to reference systems'
       type: object
@@ -1153,32 +1152,23 @@ components:
             - Domain
         domainType:
           type: string
+          enum:
+            - PointSeries
         axes:
           type: object
-          oneOf:
-            - description: 'Grid domain: x and y are required, z and t optional'
-              properties:
-                x:
-                  $ref: '#/components/schemas/numericAxis'
-                'y':
-                  $ref: '#/components/schemas/numericAxis'
-                z:
-                  $ref: '#/components/schemas/numericAxis'
-                t:
-                  $ref: '#/components/schemas/stringValuesAxis'
-              required:
-                - x
-                - 'y'
-            - description: 'Trajectory domain: mandatory composite axis and optional z axis'
-              properties:
-                axes:
-                  properties:
-                    composite:
-                      $ref: '#/components/schemas/tupleValuesAxis'
-                    z:
-                      $ref: '#/components/schemas/numericAxis'
-                  required:
-                    - composite
+          description: 'Grid domain: x and y are required, z and t optional'
+          properties:
+            x:
+              $ref: '#/components/schemas/mettsnumericValuesAxis'
+            'y':
+              $ref: '#/components/schemas/mettsnumericValuesAxis'
+            z:
+              $ref: '#/components/schemas/mettsnumericValuesAxis'
+            t:
+              $ref: '#/components/schemas/stringValuesAxis'
+          required:
+            - x
+            - 'y'
         referencing:
           type: array
           items:
@@ -1186,62 +1176,6 @@ components:
       required:
         - type
         - axes
-    ndArray:
-      type: object
-      description: Object representing a multidimensional (>= 0D) array with named axes, encoded as a flat one-dimensional array in row-major order
-      properties:
-        type:
-          type: string
-          enum:
-            - NdArray
-        dataType:
-          enum:
-            - float
-            - integer
-            - string
-        shape:
-          type: array
-          items:
-            type: number
-        axisNames:
-          type: array
-          items:
-            type: string
-          uniqueItems: true
-        values:
-          type: array
-          items:
-            type: number
-            nullable: true
-          minItems: 1
-      oneOf:
-        - properties:
-            values:
-              items:
-                type: number
-              nullable: true
-        - properties:
-            values:
-              items:
-                type: integer
-              nullable: true
-        - properties:
-            values:
-              items:
-                type: string
-              nullable: true
-        - properties:
-            shape:
-              minItems: 1
-            axisNames:
-              minItems: 1
-          required:
-            - shape
-            - axisNames
-      required:
-        - type
-        - dataType
-        - values
     observedProperty:
       type: object
       description: A definition of the quantity being measured.
@@ -1323,6 +1257,62 @@ components:
       required:
         - type
         - observedProperty
+    ndArray:
+      type: object
+      description: Object representing a multidimensional (>= 0D) array with named axes, encoded as a flat one-dimensional array in row-major order
+      properties:
+        type:
+          type: string
+          enum:
+            - NdArray
+        dataType:
+          enum:
+            - float
+            - integer
+            - string
+        shape:
+          type: array
+          items:
+            type: number
+        axisNames:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        values:
+          type: array
+          items:
+            type: number
+            nullable: true
+          minItems: 1
+      oneOf:
+        - properties:
+            values:
+              items:
+                type: number
+              nullable: true
+        - properties:
+            values:
+              items:
+                type: integer
+              nullable: true
+        - properties:
+            values:
+              items:
+                type: string
+              nullable: true
+        - properties:
+            shape:
+              minItems: 1
+            axisNames:
+              minItems: 1
+          required:
+            - shape
+            - axisNames
+      required:
+        - type
+        - dataType
+        - values
     coverageJSON:
       type: object
       title: CoverageJSON
@@ -1335,30 +1325,8 @@ components:
           type: string
           enum:
             - Coverage
-            - CoverageCollection
-            - Domain
-        domainType:
-          type: string
-        coverages:
-          type: array
-          items:
-            type: object
-            required:
-              - type
-              - domain
-              - ranges
-            properties:
-              type:
-                description: Coverage domain type
-                type: string
-                enum:
-                  - Coverage
-              domain:
-                $ref: '#/components/schemas/domain'
-              ranges:
-                additionalProperties:
-                  type: object
-                  $ref: '#/components/schemas/ndArray'
+        domain:
+          $ref: '#/components/schemas/domain'
         parameters:
           additionalProperties:
             type: object
@@ -1368,11 +1336,6 @@ components:
           additionalProperties:
             type: object
             $ref: '#/components/schemas/ndArray'
-        referencing:
-          type: array
-          items:
-            $ref: '#/components/schemas/referenceSystemConnection'
-          minItems: 1
     pointGeoJSON:
       type: object
       required:
@@ -1716,6 +1679,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/collection'
+        text/html:
+          schema:
+            type: string
+    instances:
+      description: Metadata about the instance of {collectionId} collection shared by this API
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/instances'
         text/html:
           schema:
             type: string

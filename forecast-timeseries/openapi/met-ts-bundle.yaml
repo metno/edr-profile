@@ -75,6 +75,21 @@ paths:
           $ref: '#/components/responses/collection'
         default:
           $ref: '#/components/responses/exception'
+  /collections/{collectionId}/instances:
+    get:
+      tags:
+        - Instance metadata
+      summary: List data instances of {collectionId}
+      description: This will provide list of the avalable instances of the collection Use content negotiation to request HTML or JSON.
+      operationId: getCollectionInstances
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/instances'
+        default:
+          $ref: '#/components/responses/exception'
   /collections/{collectionId}/position:
     get:
       tags:
@@ -84,6 +99,37 @@ paths:
       operationId: GetDataForPoint
       parameters:
         - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/positionCoords'
+        - $ref: '#/components/parameters/z'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/parameter-name'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '202':
+          $ref: '#/components/responses/202'
+        '308':
+          $ref: '#/components/responses/308'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '413':
+          $ref: '#/components/responses/413'
+        default:
+          $ref: '#/components/responses/exception'
+  /collections/{collectionId}/instances/{instanceId}/position:
+    get:
+      tags:
+        - Instance data queries
+      summary: Query end point for position queries of instance {instanceId} of collection {collectionId}
+      description: Query end point for position queries
+      operationId: GetInstanceDataForPoint
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/instanceId'
         - $ref: '#/components/parameters/positionCoords'
         - $ref: '#/components/parameters/z'
         - $ref: '#/components/parameters/datetime'
@@ -254,6 +300,13 @@ components:
       description: identifier (id) of the coordinate system to return data in list of valid crs identifiers for the chosen collection are defined in the metadata responses.  If not supplied the coordinate reference system will default to WGS84.
       required: false
       example: native
+      schema:
+        type: string
+    instanceId:
+      name: instanceId
+      in: path
+      description: Identifier (id) of a specific instance of a collection
+      required: true
       schema:
         type: string
   schemas:
@@ -983,6 +1036,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/collection'
+    instances:
+      type: object
+      required:
+        - links
+        - instances
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+          example:
+            - href: https://example.org/edr/collections/the_collection_id/instances
+              hreflang: en
+              rel: self
+              type: application/json
+            - href: https://example.org/edr/collections/the_collection_id/instances?f=html
+              hreflang: en
+              rel: alternate
+              type: text/html
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/collection'
     mettsnumericValuesAxis:
       description: Custom, simplified values axies for forecast timeseries profile.
       properties:
@@ -1046,40 +1122,12 @@ components:
               type: string
           required:
             - calendar
-        - description: An identifier-based reference system
+        - description: Geographic Coordinate Reference Systems
           properties:
             id:
               type: string
-            label:
-              $ref: '#/components/schemas/i18n'
             description:
               $ref: '#/components/schemas/i18n'
-            targetConcept:
-              type: object
-              properties:
-                id:
-                  type: string
-                label:
-                  $ref: '#/components/schemas/i18n'
-                description:
-                  $ref: '#/components/schemas/i18n'
-              required:
-                - label
-            identifiers:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  label:
-                    $ref: '#/components/schemas/i18n'
-                  description:
-                    $ref: '#/components/schemas/i18n'
-                required:
-                  - label
-          required:
-            - targetConcept
     referenceSystemConnection:
       description: 'Reference System Connection object: connects coordinates to reference systems'
       type: object
@@ -1104,6 +1152,8 @@ components:
             - Domain
         domainType:
           type: string
+          enum:
+            - PointSeries
         axes:
           type: object
           description: 'Grid domain: x and y are required, z and t optional'
@@ -1629,6 +1679,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/collection'
+        text/html:
+          schema:
+            type: string
+    instances:
+      description: Metadata about the instance of {collectionId} collection shared by this API
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/instances'
         text/html:
           schema:
             type: string

@@ -31,6 +31,10 @@ paths:
     $ref: paths/collections/collections.yaml
   /collections/{collectionId}:
     $ref: paths/collections/collection.yaml
+  /collections/{collectionId}/instances:
+    $ref: paths/queries/instances.yaml
   # OGC API - Environmental Data Retrieval: Queries
   /collections/{collectionId}/position:
     $ref: paths/queries/position.yaml
+  /collections/{collectionId}/instances/{instanceId}/position:
+    $ref: paths/queries/instance-position.yaml

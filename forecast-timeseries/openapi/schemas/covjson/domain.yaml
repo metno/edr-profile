@@ -8,6 +8,8 @@ properties:
       - Domain
   domainType:
     type: string
+    enum:
+      - PointSeries
   axes:
     type: object
     description: "Grid domain: x and y are required, z and t optional"

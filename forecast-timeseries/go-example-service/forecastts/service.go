@@ -21,7 +21,7 @@ func NewHandler(baseURL string) *Handler {
 func (h *Handler) GetLandingPage(ctx echo.Context, params GetLandingPageParams) error {
 	ret := LandingPage{
 		Title:       ptr("Sample edr service"),
-		Description: ptr("A sample edr service, implemented using ogen."),
+		Description: ptr("A sample edr service compliant with forecast timeseries profile, implemented using ogen."),
 		Links: []Link{
 			{
 				Href:  h.baseURL,
@@ -65,7 +65,7 @@ func (h *Handler) GetLandingPage(ctx echo.Context, params GetLandingPageParams) 
 // (GET /collections)
 func (h *Handler) ListCollections(ctx echo.Context, params ListCollectionsParams) error {
 	var collections []Collection
-	for _, collectionName := range []string{"oceanforecast"} {
+	for _, collectionName := range []string{"MEPS"} {
 		collection, err := h.getQueries(collectionName)
 		if err != nil {
 			return writer(params.F, ctx)(http.StatusInternalServerError,
@@ -95,7 +95,7 @@ func (h *Handler) ListCollections(ctx echo.Context, params ListCollectionsParams
 // List query types supported by the collection
 // (GET /collections/{collectionId})
 func (h *Handler) GetQueries(ctx echo.Context, collectionId CollectionId, params GetQueriesParams) error {
-	const id = "oceanforecast"
+	const id = "MEPS"
 
 	if collectionId != id {
 		return writer(params.F, ctx)(http.StatusNotFound,
@@ -123,8 +123,8 @@ func (h *Handler) getQueries(collectionId CollectionId) (*Collection, error) {
 	return &Collection{
 		// Links []GetQueriesOKApplicationJSONLinksItem `json:"links"`
 		Id:       collectionId,
-		Title:    ptr("Ocean forecast"),
-		Keywords: &[]string{"forecast", "ocean"},
+		Title:    ptr("MEPS"),
+		Keywords: &[]string{"forecast", "timeseries", "nordic", "air_temperature"},
 		Links: []Link{
 			{
 				Href: fmt.Sprintf("%s/collections/%s", h.baseURL, collectionId),
@@ -134,7 +134,7 @@ func (h *Handler) getQueries(collectionId CollectionId) (*Collection, error) {
 			{
 				Href: fmt.Sprintf("%s/collections/%s/position", h.baseURL, collectionId),
 				Rel:  "data",
-				Type: ptr("application/geo+json"),
+				Type: ptr("application/vnd.cov+json"),
 			},
 		},
 		Extent: Extent{
@@ -177,12 +177,44 @@ func (h *Handler) getQueries(collectionId CollectionId) (*Collection, error) {
 		},
 
 		Crs:           []string{"CRS84"},
-		OutputFormats: []string{"GeoJSON"},
+		OutputFormats: []string{"CoverageJSON"},
 
 		ParameterNames: map[string]interface{}{
-			"sea_surface_wave_height": []byte("{}"),
+			"air_temperature": []byte("{}"),
 		},
 	}, nil
+}
+
+// List data instances of {collectionId}
+// (GET /collections/{collectionId}/instances)
+func (h *Handler) GetCollectionInstances(ctx echo.Context, collectionId CollectionId, params GetCollectionInstancesParams) error {
+	var collections []Collection
+	for _, collectionName := range []string{"MEPS"} {
+		collection, err := h.getQueries(collectionName)
+		collection.Id = "2024-01-01T03:00:00Z"
+		if err != nil {
+			return writer(params.F, ctx)(http.StatusInternalServerError,
+				Exception{
+					Code:        "internal error",
+					Description: ptr("Internal server error"),
+				},
+			)
+		}
+		collections = append(collections, *collection)
+	}
+
+	ret := &Instances{
+		Links: []Link{
+			{
+				Href: h.baseURL + "/edr/collections/" + collectionId + "/",
+				Rel:  "self",
+				Type: ptr("application/json"),
+			},
+		},
+		Instances: collections,
+	}
+
+	return writer(params.F, ctx)(http.StatusOK, &ret)
 }
 
 // Query end point for position queries  of collection {collectionId}
@@ -218,6 +250,45 @@ func (h *Handler) GetDataForPoint(ctx echo.Context, collectionId CollectionId, p
 	// 	Type:        Point,
 	// 	Coordinates: []float32{10, 60},
 	// }
+
+	return writer(params.F, ctx)(http.StatusOK, covJsonForPoint())
+}
+
+// Query end point for position queries of instance {instanceId} of collection {collectionId}
+// (GET /collections/{collectionId}/instances/{instanceId}/position)
+func (h *Handler) GetInstanceDataForPoint(ctx echo.Context, collectionId CollectionId, instanceId InstanceId, params GetInstanceDataForPointParams) error {
+	return writer(params.F, ctx)(http.StatusOK, covJsonForPoint())
+}
+
+// Information about standards that this API conforms to
+// (GET /conformance)
+func (h *Handler) GetRequirementsClasses(ctx echo.Context, params GetRequirementsClassesParams) error {
+	ret := ConfClasses{
+		ConformsTo: []string{
+			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/core",
+			"http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
+			"http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections",
+			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/oas30",
+			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/html",
+			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/geojson",
+		},
+	}
+	return writer(params.F, ctx)(http.StatusOK, &ret)
+}
+
+func writer(f *F, ctx echo.Context) func(code int, i interface{}) error {
+	if f == nil || *f == "json" {
+		return ctx.JSON
+	}
+	// Fallback is json
+	return ctx.JSON
+}
+
+func ptr[T any](t T) *T {
+	return &t
+}
+
+func covJsonForPoint() *CoverageJSON {
 
 	observedPropertyID := "http://vocab.nerc.ac.uk/standard_name/air_temperature/"
 
@@ -256,7 +327,7 @@ func (h *Handler) GetDataForPoint(ctx echo.Context, collectionId CollectionId, p
 		Id: &spatialRefSysID,
 	})
 
-	domainType := "Point"
+	domainType := DomainDomainType("PointSeries")
 	domain := Domain{
 		DomainType: &domainType,
 		Type:       "Domain",
@@ -273,10 +344,10 @@ func (h *Handler) GetDataForPoint(ctx echo.Context, collectionId CollectionId, p
 			// Z Simple axis with numeric values
 			Z *MettsnumericValuesAxis `json:"z,omitempty"`
 		}{
-			X: MettsnumericValuesAxis{Values: &[]float32{60.0}},
-			Y: MettsnumericValuesAxis{Values: &[]float32{11.0}},
+			X: MettsnumericValuesAxis{Values: &[]float32{11.0}},
+			Y: MettsnumericValuesAxis{Values: &[]float32{60.0}},
 			T: &StringValuesAxis{
-				Values: []string{"2024-01-01"},
+				Values: []string{"2024-01-01T04:00:00Z", "2024-01-01T05:00:00Z", "2024-01-01T06:00:00Z"},
 			},
 		},
 		Referencing: &[]ReferenceSystemConnection{
@@ -293,46 +364,18 @@ func (h *Handler) GetDataForPoint(ctx echo.Context, collectionId CollectionId, p
 
 	ranges := map[string]NdArray{
 		"air_temperature": {
-			Type:     "NdArray",
-			DataType: "float",
-			Values:   []float32{23.8},
+			Type:      "NdArray",
+			DataType:  "float",
+			AxisNames: &[]string{"t"},
+			Shape:     &[]float32{3},
+			Values:    []float32{-20.8, -20.1, -19.5},
 		},
 	}
 
-	ret := &CoverageJSON{
+	return &CoverageJSON{
 		Type:       "Coverage",
 		Parameters: &parameters,
 		Domain:     &domain,
 		Ranges:     &ranges,
 	}
-
-	return writer(params.F, ctx)(http.StatusOK, &ret)
-}
-
-// Information about standards that this API conforms to
-// (GET /conformance)
-func (h *Handler) GetRequirementsClasses(ctx echo.Context, params GetRequirementsClassesParams) error {
-	ret := ConfClasses{
-		ConformsTo: []string{
-			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/core",
-			"http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
-			"http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections",
-			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/oas30",
-			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/html",
-			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/geojson",
-		},
-	}
-	return writer(params.F, ctx)(http.StatusOK, &ret)
-}
-
-func writer(f *F, ctx echo.Context) func(code int, i interface{}) error {
-	if f == nil || *f == "json" {
-		return ctx.JSON
-	}
-	// Fallback is json
-	return ctx.JSON
-}
-
-func ptr[T any](t T) *T {
-	return &t
 }
