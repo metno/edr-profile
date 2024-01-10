@@ -3,6 +3,7 @@ package forecastts
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -151,6 +152,36 @@ func (h *Handler) getQueries(collectionId CollectionId) (*Collection, error) {
 					}(),
 				},
 				Crs: "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]",
+			},
+			Temporal: &struct {
+				// Interval RFC3339 compliant Date and Time
+				Interval [][]time.Time `json:"interval"`
+
+				// Name Name of the temporal coordinate reference system
+				Name *string `json:"name,omitempty"`
+				Trs  string  `json:"trs"`
+
+				// Values Provides information about the time intervals available in the collection
+				// as ISO8601 compliant dates, either as a time range specified
+				// as start time / end time  (e.g. 2017-11-14T09:00Z/2017-11-14T21:00Z)  or
+				// as number of repetitions / start time / interval (e.g. R4/2017-11-14T21:00Z/PT3H)
+				// or a list of time values (e.g.
+				// 2017-11-14T09:00Z,2017-11-14T12:00Z,2017-11-14T15:00Z,2017-11-14T18:00Z,2017-11-14T21:00Z)
+				Values *[]time.Time `json:"values,omitempty"`
+			}{
+				Interval: [][]time.Time{{startTime, endTime}},
+				Values:   &[]time.Time{startTime, endTime},
+				Trs:      "http://www.opengis.net/def/uom/ISO-8601/0/Gregorian",
+			},
+			Vertical: &struct {
+				Interval [][]string "json:\"interval\""
+				Name     *string    "json:\"name,omitempty\""
+				Values   *[]string  "json:\"values,omitempty\""
+				Vrs      string     "json:\"vrs\""
+			}{
+				Vrs:      `PARAMETRICCRS["WMO standard atmosphere layer 0",PDATUM["Mean Sea Level",ANCHOR["101325 Pa at 15°C"]],CS[parametric,1],AXIS["pressure (Pa)",up],PARAMETRICUNIT["Pascal",1.0]]`,
+				Interval: [][]string{{"100000", "50000"}},
+				Values:   &[]string{"100000", "50000"},
 			},
 		},
 		// // Detailed information relevant to individual query types.
@@ -347,8 +378,9 @@ func covJsonForPoint() *CoverageJSON {
 			X: MettsnumericValuesAxis{Values: &[]float32{11.0}},
 			Y: MettsnumericValuesAxis{Values: &[]float32{60.0}},
 			T: &StringValuesAxis{
-				Values: []string{"2024-01-01T04:00:00Z", "2024-01-01T05:00:00Z", "2024-01-01T06:00:00Z"},
+				Values: []string{"2024-01-01T03:00:00Z", "2024-01-01T06:00:00Z"},
 			},
+			Z: &MettsnumericValuesAxis{Values: &[]float32{100000, 50000}},
 		},
 		Referencing: &[]ReferenceSystemConnection{
 			{
@@ -366,9 +398,9 @@ func covJsonForPoint() *CoverageJSON {
 		"air_temperature": {
 			Type:      "NdArray",
 			DataType:  "float",
-			AxisNames: &[]string{"t"},
-			Shape:     &[]float32{3},
-			Values:    []float32{-20.8, -20.1, -19.5},
+			AxisNames: &[]string{"z", "t"},
+			Shape:     &[]float32{2, 3},
+			Values:    []float32{-20.8, -20.1, -19.5, -25.8, -25.1, -24.5},
 		},
 	}
 

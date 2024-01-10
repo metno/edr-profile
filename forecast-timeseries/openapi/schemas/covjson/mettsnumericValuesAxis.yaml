@@ -1,0 +1,6 @@
+description: Custom, simplified values axies for forecast timeseries profile.
+properties:
+  values:
+    type: array
+    items:
+      type: number

@@ -4,11 +4,17 @@ A service that is compliant with this profile is also compliant with [OGC-API ED
 
 Add this profile as a conformance class to your api with the link: [https://github.com/metno/edr-profile/blob/main/profile_weather_forecast_timeseries.md](https://github.com/metno/edr-profile/blob/main/profile_weather_forecast_timeseries.md)
 
-Example service: ...
-
 ## Overview
 
-A profile for an EDR service that has weather forecast timeseries collection. A Weather forecast timeseries delivers a set for parameters from a weather forecast models for a number of timesteps for one vertical level.
+A profile for an EDR service that has weather forecast timeseries collection. A Weather forecast timeseries delivers a set for parameters from a weather forecast models for a number of timesteps for one vertical level. The forecast timeseries is encoded in CoverageJSON using the PointSeries domainType.
+
+The docs for the profile contains the following:
+
+- `Conformance` class with a list of requirements for the profile.
+- [OpenAPI spec](openapi/met-ts-bundle.yaml) compliant with the profile.
+- A [golang example service](go-example-service) compliant with the profile.
+
+OpenAPI specifications in this profile was copied from https://github.com/opengeospatial/ogcapi-environmental-data-retrieval, and then modified to fit the profile.
 
 ## Conformance
 
