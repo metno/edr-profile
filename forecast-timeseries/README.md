@@ -11,7 +11,7 @@ A profile for an EDR service that has weather forecast timeseries collection. A 
 The docs for the profile contains the following:
 
 - `Conformance` class with a list of requirements for the profile.
-- [OpenAPI spec](openapi/met-ts-bundle.yaml) compliant with the profile.
+- [OpenAPI spec](openapi/forecast-ts.yaml) compliant with the profile.
 - A [golang example service](go-example-service) compliant with the profile.
 
 OpenAPI specifications in this profile was copied from https://github.com/opengeospatial/ogcapi-environmental-data-retrieval, and then modified to fit the profile.

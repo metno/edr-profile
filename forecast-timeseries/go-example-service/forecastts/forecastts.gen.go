@@ -98,6 +98,14 @@ const (
 	Polygon PolygonGeoJSONType = "Polygon"
 )
 
+// Defines values for ReferenceSystemType.
+const (
+	GeographicCRS ReferenceSystemType = "GeographicCRS"
+	ProjectedCRS  ReferenceSystemType = "ProjectedCRS"
+	TemporalRS    ReferenceSystemType = "TemporalRS"
+	VerticalCRS   ReferenceSystemType = "VerticalCRS"
+)
+
 // DataQuery Property to contain any extra metadata information that is specific to an individual data query
 type DataQuery struct {
 	// CrsDetails List of key/value definitions for the CRS's supported by the Position query.  The key is the query parameter and the value is the Well Known Text description
@@ -541,37 +549,15 @@ type MultipolygonGeoJSONType string
 
 // NdArray Object representing a multidimensional (>= 0D) array with named axes, encoded as a flat one-dimensional array in row-major order
 type NdArray struct {
-	AxisNames *[]string   `json:"axisNames,omitempty"`
+	AxisNames []string    `json:"axisNames"`
 	DataType  interface{} `json:"dataType"`
-	Shape     *[]float32  `json:"shape,omitempty"`
+	Shape     []float32   `json:"shape"`
 	Type      NdArrayType `json:"type"`
 	Values    []float32   `json:"values"`
-	union     json.RawMessage
 }
 
 // NdArrayType defines model for NdArray.Type.
 type NdArrayType string
-
-// NdArray0 defines model for .
-type NdArray0 struct {
-	Values *interface{} `json:"values"`
-}
-
-// NdArray1 defines model for .
-type NdArray1 struct {
-	Values *interface{} `json:"values"`
-}
-
-// NdArray2 defines model for .
-type NdArray2 struct {
-	Values *interface{} `json:"values"`
-}
-
-// NdArray3 defines model for .
-type NdArray3 struct {
-	AxisNames interface{} `json:"axisNames"`
-	Shape     interface{} `json:"shape"`
-}
 
 // NumberMatched The number of features of the feature type that match the selection
 // parameters like `bbox`.
@@ -765,9 +751,12 @@ type PositionLink = Link
 
 // ReferenceSystem defines model for referenceSystem.
 type ReferenceSystem struct {
-	Type  string `json:"type"`
+	Type  ReferenceSystemType `json:"type"`
 	union json.RawMessage
 }
+
+// ReferenceSystemType defines model for ReferenceSystem.Type.
+type ReferenceSystemType string
 
 // ReferenceSystem0 Temporal reference system
 type ReferenceSystem0 struct {
@@ -775,10 +764,10 @@ type ReferenceSystem0 struct {
 	TimeScale *string `json:"timeScale,omitempty"`
 }
 
-// ReferenceSystem1 Geographic Coordinate Reference Systems
+// ReferenceSystem1 Geographic / Projected / Vertical Coordinate Reference Systems
 type ReferenceSystem1 struct {
 	// Description Object representing an internationalised string.
-	Description *I18n   `json:"description,omitempty"`
+	Description I18n    `json:"description"`
 	Id          *string `json:"id,omitempty"`
 }
 
@@ -901,8 +890,8 @@ type Z = string
 // N200ApplicationGeoPlusJSON defines model for 200.
 type N200ApplicationGeoPlusJSON = EdrFeatureCollectionGeoJSON
 
-// N200ApplicationPrsCoveragePlusJSON A geospatial coverage interchange format based on JavaScript Object Notation (JSON)
-type N200ApplicationPrsCoveragePlusJSON = CoverageJSON
+// N200ApplicationVndCovPlusJSON A geospatial coverage interchange format based on JavaScript Object Notation (JSON)
+type N200ApplicationVndCovPlusJSON = CoverageJSON
 
 // N400 defines model for 400.
 type N400 = Exception
@@ -1603,205 +1592,6 @@ func (t GeometrycollectionGeoJSON_Geometries_Item) MarshalJSON() ([]byte, error)
 
 func (t *GeometrycollectionGeoJSON_Geometries_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsNdArray0 returns the union data inside the NdArray as a NdArray0
-func (t NdArray) AsNdArray0() (NdArray0, error) {
-	var body NdArray0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromNdArray0 overwrites any union data inside the NdArray as the provided NdArray0
-func (t *NdArray) FromNdArray0(v NdArray0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeNdArray0 performs a merge with any union data inside the NdArray, using the provided NdArray0
-func (t *NdArray) MergeNdArray0(v NdArray0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsNdArray1 returns the union data inside the NdArray as a NdArray1
-func (t NdArray) AsNdArray1() (NdArray1, error) {
-	var body NdArray1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromNdArray1 overwrites any union data inside the NdArray as the provided NdArray1
-func (t *NdArray) FromNdArray1(v NdArray1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeNdArray1 performs a merge with any union data inside the NdArray, using the provided NdArray1
-func (t *NdArray) MergeNdArray1(v NdArray1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsNdArray2 returns the union data inside the NdArray as a NdArray2
-func (t NdArray) AsNdArray2() (NdArray2, error) {
-	var body NdArray2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromNdArray2 overwrites any union data inside the NdArray as the provided NdArray2
-func (t *NdArray) FromNdArray2(v NdArray2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeNdArray2 performs a merge with any union data inside the NdArray, using the provided NdArray2
-func (t *NdArray) MergeNdArray2(v NdArray2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsNdArray3 returns the union data inside the NdArray as a NdArray3
-func (t NdArray) AsNdArray3() (NdArray3, error) {
-	var body NdArray3
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromNdArray3 overwrites any union data inside the NdArray as the provided NdArray3
-func (t *NdArray) FromNdArray3(v NdArray3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeNdArray3 performs a merge with any union data inside the NdArray, using the provided NdArray3
-func (t *NdArray) MergeNdArray3(v NdArray3) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t NdArray) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	object := make(map[string]json.RawMessage)
-	if t.union != nil {
-		err = json.Unmarshal(b, &object)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if t.AxisNames != nil {
-		object["axisNames"], err = json.Marshal(t.AxisNames)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'axisNames': %w", err)
-		}
-	}
-
-	object["dataType"], err = json.Marshal(t.DataType)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling 'dataType': %w", err)
-	}
-
-	if t.Shape != nil {
-		object["shape"], err = json.Marshal(t.Shape)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'shape': %w", err)
-		}
-	}
-
-	object["type"], err = json.Marshal(t.Type)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling 'type': %w", err)
-	}
-
-	object["values"], err = json.Marshal(t.Values)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling 'values': %w", err)
-	}
-
-	b, err = json.Marshal(object)
-	return b, err
-}
-
-func (t *NdArray) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	if err != nil {
-		return err
-	}
-	object := make(map[string]json.RawMessage)
-	err = json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["axisNames"]; found {
-		err = json.Unmarshal(raw, &t.AxisNames)
-		if err != nil {
-			return fmt.Errorf("error reading 'axisNames': %w", err)
-		}
-	}
-
-	if raw, found := object["dataType"]; found {
-		err = json.Unmarshal(raw, &t.DataType)
-		if err != nil {
-			return fmt.Errorf("error reading 'dataType': %w", err)
-		}
-	}
-
-	if raw, found := object["shape"]; found {
-		err = json.Unmarshal(raw, &t.Shape)
-		if err != nil {
-			return fmt.Errorf("error reading 'shape': %w", err)
-		}
-	}
-
-	if raw, found := object["type"]; found {
-		err = json.Unmarshal(raw, &t.Type)
-		if err != nil {
-			return fmt.Errorf("error reading 'type': %w", err)
-		}
-	}
-
-	if raw, found := object["values"]; found {
-		err = json.Unmarshal(raw, &t.Values)
-		if err != nil {
-			return fmt.Errorf("error reading 'values': %w", err)
-		}
-	}
-
 	return err
 }
 

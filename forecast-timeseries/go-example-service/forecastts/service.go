@@ -159,7 +159,7 @@ func (h *Handler) GetDataForPoint(ctx echo.Context, collectionId CollectionId, p
 	if err != nil {
 		return err
 	}
-	return ctx.Blob(http.StatusOK, "application/prs.coverage+json", payload)
+	return ctx.Blob(http.StatusOK, "application/vnd.cov+json", payload)
 	//return writer(params.F, ctx)(http.StatusOK, covJsonForPoint())
 }
 
@@ -171,7 +171,7 @@ func (h *Handler) GetInstanceDataForPoint(ctx echo.Context, collectionId Collect
 	if err != nil {
 		return err
 	}
-	return ctx.Blob(http.StatusOK, "application/prs.coverage+json", payload)
+	return ctx.Blob(http.StatusOK, "application/vnd.cov+json", payload)
 	//return writer(params.F, ctx)(http.StatusOK, covJsonForPoint())
 }
 
@@ -186,6 +186,7 @@ func (h *Handler) GetRequirementsClasses(ctx echo.Context, params GetRequirement
 			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/oas30",
 			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/html",
 			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/geojson",
+			"https://pages.github.com/metno/edr-profile/forecast-timeseries-0.1",
 		},
 	}
 	return writer(params.F, ctx)(http.StatusOK, &ret)

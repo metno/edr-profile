@@ -141,14 +141,18 @@ func covJsonForPoint() *CoverageJSON {
 	spatialRefSysID := "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
 	spatialRefSys.FromReferenceSystem1(ReferenceSystem1{
 		Id: &spatialRefSysID,
+		Description: map[string]string{
+			"en": "WGS84 geographical coordinate system using longitude,latitude as values.",
+		},
 	})
 
-	verticalRefSysID := "????"
 	verticalRefSys := ReferenceSystem{
 		Type: "VerticalCRS",
 	}
 	verticalRefSys.FromReferenceSystem1(ReferenceSystem1{
-		Id: &verticalRefSysID,
+		Description: map[string]string{
+			"en": "Vertical coordinate system using pressure(Pa) as values.",
+		},
 	})
 
 	domainType := DomainDomainType("PointSeries")
@@ -195,8 +199,8 @@ func covJsonForPoint() *CoverageJSON {
 		"air_temperature": {
 			Type:      "NdArray",
 			DataType:  "float",
-			AxisNames: &[]string{"t"},
-			Shape:     &[]float32{3},
+			AxisNames: []string{"t"},
+			Shape:     []float32{3},
 			Values:    []float32{-20.8, -20.1, -19.5},
 		},
 	}

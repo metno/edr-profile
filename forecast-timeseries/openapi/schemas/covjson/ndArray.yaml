@@ -9,8 +9,6 @@ properties:
   dataType:
     enum:
       - float
-      - integer
-      - string
   shape:
     type: array
     items:
@@ -22,12 +20,13 @@ properties:
     uniqueItems: true
   values:
     type: array
-    minItems: 1
     items:
       type: number
       nullable: true
+    minItems: 1
 required:
   - type
   - dataType
   - values
+  - shape
   - axisNames

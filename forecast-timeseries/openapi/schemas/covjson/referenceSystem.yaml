@@ -2,8 +2,11 @@ type: object
 properties:
   type:
     type: string
-required:
-  - type
+    enum:
+      - VerticalCRS
+      - ProjectedCRS
+      - GeographicCRS
+      - TemporalRS
 oneOf:
   - description: Temporal reference system
     properties:
@@ -13,14 +16,16 @@ oneOf:
         type: string
     required:
       - calendar
-  - description: Geographic Coordinate Reference Systems
+  - description: Geographic / Projected / Vertical Coordinate Reference Systems
     properties:
       id:
         type: string
       description:
         $ref: ../i18n.yaml
     required:
-      - id
+      - description
+required:
+  - type
   # - description: An identifier-based reference system
   #   properties:
   #     id:

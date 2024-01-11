@@ -1111,8 +1111,11 @@ components:
       properties:
         type:
           type: string
-      required:
-        - type
+          enum:
+            - VerticalCRS
+            - ProjectedCRS
+            - GeographicCRS
+            - TemporalRS
       oneOf:
         - description: Temporal reference system
           properties:
@@ -1122,14 +1125,16 @@ components:
               type: string
           required:
             - calendar
-        - description: Geographic Coordinate Reference Systems
+        - description: Geographic / Projected / Vertical Coordinate Reference Systems
           properties:
             id:
               type: string
             description:
               $ref: '#/components/schemas/i18n'
           required:
-            - id
+            - description
+      required:
+        - type
     referenceSystemConnection:
       description: 'Reference System Connection object: connects coordinates to reference systems'
       type: object
@@ -1270,8 +1275,6 @@ components:
         dataType:
           enum:
             - float
-            - integer
-            - string
         shape:
           type: array
           items:
@@ -1283,14 +1286,15 @@ components:
           uniqueItems: true
         values:
           type: array
-          minItems: 1
           items:
             type: number
             nullable: true
+          minItems: 1
       required:
         - type
         - dataType
         - values
+        - shape
         - axisNames
     coverageJSON:
       type: object
@@ -1587,7 +1591,7 @@ components:
     '200':
       description: Data ranges required to construct valid queries for the choosen data collection
       content:
-        application/prs.coverage+json:
+        application/vnd.cov+json:
           schema:
             $ref: '#/components/schemas/coverageJSON'
         application/geo+json:
