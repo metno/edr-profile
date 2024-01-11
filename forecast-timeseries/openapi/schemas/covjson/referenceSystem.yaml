@@ -19,6 +19,8 @@ oneOf:
         type: string
       description:
         $ref: ../i18n.yaml
+    required:
+      - id
   # - description: An identifier-based reference system
   #   properties:
   #     id:

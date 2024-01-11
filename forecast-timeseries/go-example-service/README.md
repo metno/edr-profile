@@ -15,6 +15,15 @@ mkdir forecastts
 oapi-codegen -generate types,server -package forecastts openapi/forecast-ts-bundle.yaml > forecastts/forecastts.gen.go
 ```
 
-### Custom code
+## How to use
 
-In addition t
+1. Install Go.
+
+2. Start the service:
+
+```bash
+cd go-example-service
+go run .
+```
+
+3. Go to `localhost:1323` in your browser.

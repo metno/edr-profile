@@ -1128,6 +1128,8 @@ components:
               type: string
             description:
               $ref: '#/components/schemas/i18n'
+          required:
+            - id
     referenceSystemConnection:
       description: 'Reference System Connection object: connects coordinates to reference systems'
       type: object
@@ -1281,38 +1283,15 @@ components:
           uniqueItems: true
         values:
           type: array
+          minItems: 1
           items:
             type: number
             nullable: true
-          minItems: 1
-      oneOf:
-        - properties:
-            values:
-              items:
-                type: number
-              nullable: true
-        - properties:
-            values:
-              items:
-                type: integer
-              nullable: true
-        - properties:
-            values:
-              items:
-                type: string
-              nullable: true
-        - properties:
-            shape:
-              minItems: 1
-            axisNames:
-              minItems: 1
-          required:
-            - shape
-            - axisNames
       required:
         - type
         - dataType
         - values
+        - axisNames
     coverageJSON:
       type: object
       title: CoverageJSON
@@ -1334,7 +1313,6 @@ components:
         ranges:
           type: object
           additionalProperties:
-            type: object
             $ref: '#/components/schemas/ndArray'
     pointGeoJSON:
       type: object
