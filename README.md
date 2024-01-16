@@ -1,15 +1,17 @@
 # edr-profile
 
-OGC-API EDR constraints and extensions for meteorological and oceanographic data.
+An edr profile sets constraints and extensions for an OGC-API EDR service providing meteorological and oceanographic data.
 
 The idea is that EDR services distributing a certain data type should be interoperable.
 Interoperable in the sense that one client/library should be able to use EDR-services from different projects/institutes to query data for a specific data type without having custom code/plugins for each service.
+
+Each profile is meant to have a precise OpenAPI specification, which means that all collections available from a given landing page will have to be compliant with the profile and its OpenAPI specification.
 
 We build a separate profile for each data type. Each profile is versioned separately using semantic versioning.
 
 The data types are:
 
-- Weather forecast timeseries
+- [Weather forecast timeseries](forecast-timeseries/README.md)
 - Aviation
 - In-situ observations
 - Radar
@@ -33,14 +35,7 @@ If a project can not wait for a decision, or if it strongly disagrees with the d
 - Each profile is separated into the sections:
   - Landing page
   - Collection
+  - Instances
   - Data queries
   - Response format
 - A new file is created when a new major version is necessary.
-
-### Validating if a service complies with a profile
-
-- Encode the profiles in an service that can validate compliance. Run the validation service against a set of registered services before merging a PR.
-
-## Tentative process for adding a new data type profile
-
-TODO

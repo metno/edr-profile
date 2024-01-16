@@ -41,7 +41,7 @@ OpenAPI specifications in this profile was copied from https://github.com/openge
 
 ### Requirement 2
 
-#### Collection instances
+#### Instances
 
 - A: id of an instance SHALL represent the reference time of the forecast model run, the value of the id parameter SHALL be on on the format `20240101T000000Z`.
 - B: CRS must be WGS 84: http://www.opengis.net/def/crs/OGC/1.3/CRS84.
