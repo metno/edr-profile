@@ -34,9 +34,9 @@ OpenAPI specifications in this profile was copied from https://github.com/openge
 
 #### /response_format
 
-- A: The response format for a point data query SHALL be a CoverageJSON document with media type  application/prs.coverage+json.
+- A: The response format for a point data query SHALL be a CoverageJSON document with media type application/vnd.cov+json.
 - B: The response format for a 5xx response SHALL be....
-- C: DomainType SHOULD be PointSeries.
+- C: DomainType SHALL be PointSeries.
 
 ### Requirement A.2
 
@@ -44,10 +44,11 @@ OpenAPI specifications in this profile was copied from https://github.com/openge
 
 - A: temporal extent SHALL either be null or specify the start and end time that cover all instances of this collection.
 - B: parameter_names includes all parameters mentioned in at least one of the instances. No guarantee that a parameter will be available for all instances.
+- C: Use the CF convention to describe parameters when possible. If no term exists in the CF-convention, refer to another standard vocabulary. The key to parameter_names SHALL be the standard_name of the parameter in that vocabulary.
 
 #### /collections/<collectionid>/instances/<instanceid>/
 
-- A: id SHALL represent the reference time of the forecast model, the value of the id parameter MUST be on the ISO-8601 format.
+- A: id SHALL represent the reference time of the forecast model, the value of the id parameter SHALL be on on the format `20240101T000000Z`.
 - B: CRS must be WGS 84: http://www.opengis.net/def/crs/OGC/1.3/CRS84.
 - C: All temporal values are on ISO-8601 format: http://www.opengis.net/def/uom/ISO-8601/0/Gregorian.
 - D: temporal extent MUST describe the start and end of the model forecast run that this instance represent.

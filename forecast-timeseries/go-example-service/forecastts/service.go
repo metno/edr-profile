@@ -2,6 +2,7 @@ package forecastts
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -66,7 +67,8 @@ func (h *Handler) GetLandingPage(ctx echo.Context, params GetLandingPageParams) 
 func (h *Handler) ListCollections(ctx echo.Context, params ListCollectionsParams) error {
 	var collections []Collection
 	for _, collectionName := range []string{"MEPS"} {
-		collection, err := h.getQueries(collectionName)
+		collectionPath := fmt.Sprintf("collections/%s", collectionName)
+		collection, err := h.getCollection(collectionName, collectionPath)
 		if err != nil {
 			return writer(params.F, ctx)(http.StatusInternalServerError,
 				Exception{
@@ -106,7 +108,8 @@ func (h *Handler) GetQueries(ctx echo.Context, collectionId CollectionId, params
 		)
 	}
 
-	ret, err := h.getQueries(collectionId)
+	collectionPath := fmt.Sprintf("collections/%s", id)
+	ret, err := h.getCollection(id, collectionPath)
 	if err != nil {
 		return writer(params.F, ctx)(http.StatusInternalServerError,
 			Exception{
@@ -115,6 +118,12 @@ func (h *Handler) GetQueries(ctx echo.Context, collectionId CollectionId, params
 			},
 		)
 	}
+	ret.Links = append(ret.Links,
+		Link{
+			Href: fmt.Sprintf("%s/collections/%s/instances", h.baseURL, collectionId),
+			Rel:  "collection",
+			Type: ptr("application/json"),
+		})
 
 	return writer(params.F, ctx)(http.StatusOK, &ret)
 }
@@ -123,9 +132,11 @@ func (h *Handler) GetQueries(ctx echo.Context, collectionId CollectionId, params
 // (GET /collections/{collectionId}/instances)
 func (h *Handler) GetCollectionInstances(ctx echo.Context, collectionId CollectionId, params GetCollectionInstancesParams) error {
 	var collections []Collection
+	refTime := getTimes()[0]
+	id := refTime.Format("20060102150405")
 	for _, collectionName := range []string{"MEPS"} {
-		collection, err := h.getQueries(collectionName)
-		collection.Id = "2024-01-01T03:00:00Z"
+		collectionPath := fmt.Sprintf("collections/%s/instances/%s", collectionName, id)
+		collection, err := h.getCollection(id, collectionPath)
 		if err != nil {
 			return writer(params.F, ctx)(http.StatusInternalServerError,
 				Exception{
@@ -140,7 +151,7 @@ func (h *Handler) GetCollectionInstances(ctx echo.Context, collectionId Collecti
 	ret := &Instances{
 		Links: []Link{
 			{
-				Href: h.baseURL + "/collections/" + collectionId + "/",
+				Href: h.baseURL + "/collections/" + collectionId + "/instances/",
 				Rel:  "self",
 				Type: ptr("application/json"),
 			},

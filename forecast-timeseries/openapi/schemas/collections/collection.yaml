@@ -100,5 +100,4 @@ properties:
     description: list of the data parameters available in the collection
     type: object
     additionalProperties:
-      items:
-        $ref: parameterNames.yaml
+      $ref: parameterNames.yaml

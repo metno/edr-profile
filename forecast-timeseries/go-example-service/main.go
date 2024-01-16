@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/labstack/echo/v4"
+	echo "github.com/labstack/echo/v4"
+	echomiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/metno/edr-profile/forecast-timeseries/go-example-service/forecastts"
 	"github.com/metno/edr-profile/forecast-timeseries/go-example-service/openapi"
 )
@@ -19,6 +20,7 @@ func main() {
 	service := forecastts.NewHandler(*basePath)
 
 	e := echo.New()
+	e.Pre(echomiddleware.RemoveTrailingSlash())
 
 	forecastts.RegisterHandlers(e, service)
 	e.GET("/api", openapi.ServeEcho)

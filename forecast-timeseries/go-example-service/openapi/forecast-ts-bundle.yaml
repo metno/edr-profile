@@ -750,43 +750,35 @@ components:
           example: https://example.com/collections/monitoringsites/items
         variables:
           $ref: '#/components/schemas/itemsDataQuery'
-    units:
+    collectionUnitSymbol:
+      title: Describe unit symbol
+      type: object
+      properties:
+        value:
+          description: representation of the units symbol
+          type: string
+        type:
+          description: uri to detailed desxcription of the units
+          type: string
+        description:
+          description: A text description of the symbol
+          type: string
+        title:
+          description: Symbol name
+          type: string
+    collectionUnit:
       type: object
       title: unit name
-      description: definition of data units
-      anyOf:
-        - required:
-            - label
-        - required:
-            - symbol
-        - required:
-            - label
-            - symbol
+      description: definition of unit
+      required:
+        - label
+        - symbol
       properties:
         label:
-          additionalProperties:
-            type: string
-        symbol:
-          title: Describe unit symbol
-          oneOf:
-            - type: object
-              description: Information about the symbol used to describe the units
-              required:
-                - value
-                - type
-              properties:
-                value:
-                  description: representation of the units symbol
-                  type: string
-                type:
-                  description: uri to detailed desxcription of the units
-                  type: string
-            - type: string
-          example:
-            value: hPa
-            type: http://www.opengis.net/def/uom/UCUM/
-        id:
+          description: Name of the unit
           type: string
+        symbol:
+          $ref: '#/components/schemas/collectionUnitSymbol'
       example:
         label:
           en: Kelvin
@@ -851,6 +843,7 @@ components:
       properties:
         type:
           description: type
+          type: string
           enum:
             - Parameter
         description:
@@ -865,7 +858,7 @@ components:
             - float
             - string
         unit:
-          $ref: '#/components/schemas/units'
+          $ref: '#/components/schemas/collectionUnit'
         observedProperty:
           $ref: '#/components/schemas/observedPropertyCollection'
         categoryEncoding:
@@ -1011,8 +1004,7 @@ components:
           description: list of the data parameters available in the collection
           type: object
           additionalProperties:
-            items:
-              $ref: '#/components/schemas/parameterNames'
+            $ref: '#/components/schemas/parameterNames'
     collections:
       type: object
       required:
@@ -1210,7 +1202,7 @@ components:
           minItems: 1
       required:
         - label
-    unit:
+    geoJSONunit:
       type: object
       description: The units of measure
       properties:
@@ -1219,22 +1211,17 @@ components:
         label:
           $ref: '#/components/schemas/i18n'
         symbol:
-          oneOf:
-            - type: string
-            - type: object
-              properties:
-                type:
-                  type: string
-                value:
-                  type: string
-              required:
-                - type
-                - value
-      anyOf:
-        - required:
-            - label
-        - required:
-            - symbol
+          type: object
+          properties:
+            type:
+              type: string
+            value:
+              type: string
+          required:
+            - type
+            - value
+      required:
+        - label
     parameter:
       type: object
       description: Represents metadata about the values of the coverage
@@ -1251,7 +1238,7 @@ components:
         observedProperty:
           $ref: '#/components/schemas/observedProperty'
         unit:
-          $ref: '#/components/schemas/unit'
+          $ref: '#/components/schemas/geoJSONunit'
         categoryEncoding:
           type: object
           description: Maps IDs of categories in the observedProperty to range values

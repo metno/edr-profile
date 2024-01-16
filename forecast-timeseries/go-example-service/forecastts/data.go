@@ -5,11 +5,26 @@ import (
 	"time"
 )
 
-var referenceTime, _ = time.Parse(time.RFC3339, "2024-01-01T03:00:00Z")
-var startTime, _ = time.Parse(time.RFC3339, "2024-01-01T03:00:00Z")
-var endTime, _ = time.Parse(time.RFC3339, "2024-01-01T06:00:00Z")
+func getTimes() []time.Time {
+	var times []time.Time
+	for _, ts := range []string{"2024-01-01T03:00:00Z", "2024-01-01T04:00:00Z", "2024-01-01T05:00:00Z"} {
+		tmp, _ := time.Parse(time.RFC3339, ts)
+		times = append(times, tmp)
+	}
+	return times
+}
 
-func (h *Handler) getQueries(collectionId CollectionId) (*Collection, error) {
+func (h *Handler) getCollection(collectionId CollectionId, collectionPath string) (*Collection, error) {
+	parameterNameID := "https://vocab.nerc.ac.uk/standard_name/air_temperature/"
+	parameterNameLabel := ObservedPropertyCollection_Label{}
+	parameterNameLabel.FromObservedPropertyCollectionLabel0(
+		ObservedPropertyCollectionLabel0("Temperature"),
+	)
+	symbolValue := "K"
+	symbolType := "https://qudt.org/vocab/unit/K"
+
+	times := getTimes()
+
 	return &Collection{
 		// Links []GetQueriesOKApplicationJSONLinksItem `json:"links"`
 		Id:       collectionId,
@@ -17,12 +32,12 @@ func (h *Handler) getQueries(collectionId CollectionId) (*Collection, error) {
 		Keywords: &[]string{"forecast", "timeseries", "nordic", "air_temperature"},
 		Links: []Link{
 			{
-				Href: fmt.Sprintf("%s/collections/%s", h.baseURL, collectionId),
-				Rel:  "data",
+				Href: fmt.Sprintf("%s/%s", h.baseURL, collectionPath),
+				Rel:  "self",
 				Type: ptr("application/geo+json"),
 			},
 			{
-				Href: fmt.Sprintf("%s/collections/%s/position", h.baseURL, collectionId),
+				Href: fmt.Sprintf("%s/%s/position", h.baseURL, collectionPath),
 				Rel:  "data",
 				Type: ptr("application/vnd.cov+json"),
 			},
@@ -58,8 +73,8 @@ func (h *Handler) getQueries(collectionId CollectionId) (*Collection, error) {
 				// 2017-11-14T09:00Z,2017-11-14T12:00Z,2017-11-14T15:00Z,2017-11-14T18:00Z,2017-11-14T21:00Z)
 				Values *[]time.Time `json:"values,omitempty"`
 			}{
-				Interval: [][]time.Time{{startTime, endTime}},
-				Values:   &[]time.Time{startTime, endTime},
+				Interval: [][]time.Time{{times[0], times[len(times)-1]}},
+				Values:   &times,
 				Trs:      "https://tools.ietf.org/html/rfc3339#section-5.6", // "http://www.opengis.net/def/uom/ISO-8601/0/Gregorian",
 			},
 			Vertical: &struct {
@@ -99,8 +114,21 @@ func (h *Handler) getQueries(collectionId CollectionId) (*Collection, error) {
 		Crs:           []string{"CRS84"},
 		OutputFormats: []string{"CoverageJSON"},
 
-		ParameterNames: map[string]interface{}{
-			"air_temperature": []byte("{}"),
+		ParameterNames: map[string]ParameterNames{
+			"air_temperature": {
+				Type: "Parameter",
+				ObservedProperty: ObservedPropertyCollection{
+					Id:    &parameterNameID,
+					Label: parameterNameLabel,
+				},
+				Unit: &CollectionUnit{
+					Label: "Kelvin",
+					Symbol: CollectionUnitSymbol{
+						Value: &symbolValue,
+						Type:  &symbolType,
+					},
+				},
+			},
 		},
 	}, nil
 }
@@ -112,17 +140,24 @@ func covJsonForPoint() *CoverageJSON {
 		"air_temperature": {
 			Type: "Parameter",
 			Description: &I18n{
-				"en": "air_temperature, cf-convention?",
+				"en": "Air temperature is the bulk temperature of the air, not the surface (skin) temperature.",
 			},
-			Unit: &Unit{
-				Label: &I18n{
+			Unit: &GeoJSONunit{
+				Label: I18n{
 					"en": "Kelvin",
+				},
+				Symbol: &struct {
+					Type  string `json:"type"`
+					Value string `json:"value"`
+				}{
+					Type:  "https://qudt.org/vocab/unit/K",
+					Value: "K",
 				},
 			},
 			ObservedProperty: ObservedProperty{
 				Id: &observedPropertyID,
 				Label: I18n{
-					"en": "Air temperature is the bulk temperature of the air, not the surface (skin) temperature.",
+					"en": "air_temperature",
 				},
 			},
 		},
@@ -155,6 +190,10 @@ func covJsonForPoint() *CoverageJSON {
 		},
 	})
 
+	var timeStamps []string
+	for _, t := range getTimes() {
+		timeStamps = append(timeStamps, t.Format(time.RFC3339))
+	}
 	domainType := DomainDomainType("PointSeries")
 	domain := Domain{
 		DomainType: &domainType,
@@ -175,7 +214,7 @@ func covJsonForPoint() *CoverageJSON {
 			X: MettsnumericValuesAxis{Values: &[]float32{11.0}},
 			Y: MettsnumericValuesAxis{Values: &[]float32{60.0}},
 			T: &StringValuesAxis{
-				Values: []string{"2024-01-01T03:00:00Z", "2024-01-01T06:00:00Z"},
+				Values: timeStamps,
 			},
 			Z: &MettsnumericValuesAxis{Values: &[]float32{100000}},
 		},

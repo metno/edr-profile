@@ -13,7 +13,7 @@ properties:
   observedProperty:
     $ref: observedProperty.yaml
   unit:
-    $ref: unit.yaml
+    $ref: geoJSONunit.yaml
   categoryEncoding:
     type: object
     description: Maps IDs of categories in the observedProperty to range values

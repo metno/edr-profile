@@ -7,6 +7,7 @@ required:
 properties:
   type:
     description: type
+    type: string
     enum:
       - Parameter
   description:
@@ -21,7 +22,7 @@ properties:
       - float
       - string                
   unit:
-    $ref: units.yaml
+    $ref: collectionUnit.yaml
   observedProperty:
     $ref: observedPropertyCollection.yaml
   categoryEncoding:

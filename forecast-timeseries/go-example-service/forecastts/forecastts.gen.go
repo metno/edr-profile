@@ -88,6 +88,11 @@ const (
 	String  ParameterNamesDataType = "string"
 )
 
+// Defines values for ParameterNamesType.
+const (
+	ParameterNamesTypeParameter ParameterNamesType = "Parameter"
+)
+
 // Defines values for PointGeoJSONType.
 const (
 	Point PointGeoJSONType = "Point"
@@ -161,10 +166,32 @@ type Collection struct {
 	OutputFormats []string `json:"output_formats"`
 
 	// ParameterNames list of the data parameters available in the collection
-	ParameterNames map[string]interface{} `json:"parameter_names"`
+	ParameterNames map[string]ParameterNames `json:"parameter_names"`
 
 	// Title title of the collection
 	Title *string `json:"title,omitempty"`
+}
+
+// CollectionUnit definition of unit
+type CollectionUnit struct {
+	// Label Name of the unit
+	Label  string               `json:"label"`
+	Symbol CollectionUnitSymbol `json:"symbol"`
+}
+
+// CollectionUnitSymbol defines model for collectionUnitSymbol.
+type CollectionUnitSymbol struct {
+	// Description A text description of the symbol
+	Description *string `json:"description,omitempty"`
+
+	// Title Symbol name
+	Title *string `json:"title,omitempty"`
+
+	// Type uri to detailed desxcription of the units
+	Type *string `json:"type,omitempty"`
+
+	// Value representation of the units symbol
+	Value *string `json:"value,omitempty"`
 }
 
 // Collections defines model for collections.
@@ -413,6 +440,18 @@ type FeatureGeoJSON_Id struct {
 // FeatureGeoJSONType defines model for FeatureGeoJSON.Type.
 type FeatureGeoJSONType string
 
+// GeoJSONunit The units of measure
+type GeoJSONunit struct {
+	Id *string `json:"id,omitempty"`
+
+	// Label Object representing an internationalised string.
+	Label  I18n `json:"label"`
+	Symbol *struct {
+		Type  string `json:"type"`
+		Value string `json:"value"`
+	} `json:"symbol,omitempty"`
+}
+
 // GeometrycollectionGeoJSON defines model for geometrycollectionGeoJSON.
 type GeometrycollectionGeoJSON struct {
 	Geometries []GeometrycollectionGeoJSON_Geometries_Item `json:"geometries"`
@@ -660,7 +699,7 @@ type Parameter struct {
 	Type ParameterType `json:"type"`
 
 	// Unit The units of measure
-	Unit *Unit `json:"unit,omitempty"`
+	Unit *GeoJSONunit `json:"unit,omitempty"`
 }
 
 // ParameterCategoryEncoding0 defines model for .
@@ -705,10 +744,10 @@ type ParameterNames struct {
 	ObservedProperty ObservedPropertyCollection `json:"observedProperty"`
 
 	// Type type
-	Type interface{} `json:"type"`
+	Type ParameterNamesType `json:"type"`
 
-	// Unit definition of data units
-	Unit *Units `json:"unit,omitempty"`
+	// Unit definition of unit
+	Unit *CollectionUnit `json:"unit,omitempty"`
 }
 
 // ParameterNamesCategoryEncoding0 defines model for .
@@ -724,6 +763,9 @@ type ParameterNames_CategoryEncoding_AdditionalProperties struct {
 
 // ParameterNamesDataType Data type of returned parameter
 type ParameterNamesDataType string
+
+// ParameterNamesType type
+type ParameterNamesType string
 
 // PointGeoJSON defines model for pointGeoJSON.
 type PointGeoJSON struct {
@@ -784,70 +826,6 @@ type StringValuesAxis struct {
 	DataType    *string      `json:"dataType,omitempty"`
 	Values      interface{}  `json:"values"`
 }
-
-// Unit The units of measure
-type Unit struct {
-	Id *string `json:"id,omitempty"`
-
-	// Label Object representing an internationalised string.
-	Label  *I18n        `json:"label,omitempty"`
-	Symbol *Unit_Symbol `json:"symbol,omitempty"`
-	union  json.RawMessage
-}
-
-// UnitSymbol0 defines model for .
-type UnitSymbol0 = string
-
-// UnitSymbol1 defines model for .
-type UnitSymbol1 struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
-}
-
-// Unit_Symbol defines model for Unit.Symbol.
-type Unit_Symbol struct {
-	union json.RawMessage
-}
-
-// Unit0 defines model for .
-type Unit0 = interface{}
-
-// Unit1 defines model for .
-type Unit1 = interface{}
-
-// Units definition of data units
-type Units struct {
-	Id     *string            `json:"id,omitempty"`
-	Label  *map[string]string `json:"label,omitempty"`
-	Symbol *Units_Symbol      `json:"symbol,omitempty"`
-	union  json.RawMessage
-}
-
-// UnitsSymbol0 Information about the symbol used to describe the units
-type UnitsSymbol0 struct {
-	// Type uri to detailed desxcription of the units
-	Type string `json:"type"`
-
-	// Value representation of the units symbol
-	Value string `json:"value"`
-}
-
-// UnitsSymbol1 defines model for .
-type UnitsSymbol1 = string
-
-// Units_Symbol defines model for Units.Symbol.
-type Units_Symbol struct {
-	union json.RawMessage
-}
-
-// Units0 defines model for .
-type Units0 = interface{}
-
-// Units1 defines model for .
-type Units1 = interface{}
-
-// Units2 defines model for .
-type Units2 = interface{}
 
 // ValuesAxisBase Base schema for values-based axis schemas
 type ValuesAxisBase struct {
@@ -1997,404 +1975,6 @@ func (t *ReferenceSystem) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	return err
-}
-
-// AsUnit0 returns the union data inside the Unit as a Unit0
-func (t Unit) AsUnit0() (Unit0, error) {
-	var body Unit0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnit0 overwrites any union data inside the Unit as the provided Unit0
-func (t *Unit) FromUnit0(v Unit0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnit0 performs a merge with any union data inside the Unit, using the provided Unit0
-func (t *Unit) MergeUnit0(v Unit0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsUnit1 returns the union data inside the Unit as a Unit1
-func (t Unit) AsUnit1() (Unit1, error) {
-	var body Unit1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnit1 overwrites any union data inside the Unit as the provided Unit1
-func (t *Unit) FromUnit1(v Unit1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnit1 performs a merge with any union data inside the Unit, using the provided Unit1
-func (t *Unit) MergeUnit1(v Unit1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t Unit) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	object := make(map[string]json.RawMessage)
-	if t.union != nil {
-		err = json.Unmarshal(b, &object)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if t.Id != nil {
-		object["id"], err = json.Marshal(t.Id)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'id': %w", err)
-		}
-	}
-
-	if t.Label != nil {
-		object["label"], err = json.Marshal(t.Label)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'label': %w", err)
-		}
-	}
-
-	if t.Symbol != nil {
-		object["symbol"], err = json.Marshal(t.Symbol)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'symbol': %w", err)
-		}
-	}
-	b, err = json.Marshal(object)
-	return b, err
-}
-
-func (t *Unit) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	if err != nil {
-		return err
-	}
-	object := make(map[string]json.RawMessage)
-	err = json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["id"]; found {
-		err = json.Unmarshal(raw, &t.Id)
-		if err != nil {
-			return fmt.Errorf("error reading 'id': %w", err)
-		}
-	}
-
-	if raw, found := object["label"]; found {
-		err = json.Unmarshal(raw, &t.Label)
-		if err != nil {
-			return fmt.Errorf("error reading 'label': %w", err)
-		}
-	}
-
-	if raw, found := object["symbol"]; found {
-		err = json.Unmarshal(raw, &t.Symbol)
-		if err != nil {
-			return fmt.Errorf("error reading 'symbol': %w", err)
-		}
-	}
-
-	return err
-}
-
-// AsUnitSymbol0 returns the union data inside the Unit_Symbol as a UnitSymbol0
-func (t Unit_Symbol) AsUnitSymbol0() (UnitSymbol0, error) {
-	var body UnitSymbol0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnitSymbol0 overwrites any union data inside the Unit_Symbol as the provided UnitSymbol0
-func (t *Unit_Symbol) FromUnitSymbol0(v UnitSymbol0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnitSymbol0 performs a merge with any union data inside the Unit_Symbol, using the provided UnitSymbol0
-func (t *Unit_Symbol) MergeUnitSymbol0(v UnitSymbol0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsUnitSymbol1 returns the union data inside the Unit_Symbol as a UnitSymbol1
-func (t Unit_Symbol) AsUnitSymbol1() (UnitSymbol1, error) {
-	var body UnitSymbol1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnitSymbol1 overwrites any union data inside the Unit_Symbol as the provided UnitSymbol1
-func (t *Unit_Symbol) FromUnitSymbol1(v UnitSymbol1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnitSymbol1 performs a merge with any union data inside the Unit_Symbol, using the provided UnitSymbol1
-func (t *Unit_Symbol) MergeUnitSymbol1(v UnitSymbol1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t Unit_Symbol) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *Unit_Symbol) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsUnits0 returns the union data inside the Units as a Units0
-func (t Units) AsUnits0() (Units0, error) {
-	var body Units0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnits0 overwrites any union data inside the Units as the provided Units0
-func (t *Units) FromUnits0(v Units0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnits0 performs a merge with any union data inside the Units, using the provided Units0
-func (t *Units) MergeUnits0(v Units0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsUnits1 returns the union data inside the Units as a Units1
-func (t Units) AsUnits1() (Units1, error) {
-	var body Units1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnits1 overwrites any union data inside the Units as the provided Units1
-func (t *Units) FromUnits1(v Units1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnits1 performs a merge with any union data inside the Units, using the provided Units1
-func (t *Units) MergeUnits1(v Units1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsUnits2 returns the union data inside the Units as a Units2
-func (t Units) AsUnits2() (Units2, error) {
-	var body Units2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnits2 overwrites any union data inside the Units as the provided Units2
-func (t *Units) FromUnits2(v Units2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnits2 performs a merge with any union data inside the Units, using the provided Units2
-func (t *Units) MergeUnits2(v Units2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t Units) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	object := make(map[string]json.RawMessage)
-	if t.union != nil {
-		err = json.Unmarshal(b, &object)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if t.Id != nil {
-		object["id"], err = json.Marshal(t.Id)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'id': %w", err)
-		}
-	}
-
-	if t.Label != nil {
-		object["label"], err = json.Marshal(t.Label)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'label': %w", err)
-		}
-	}
-
-	if t.Symbol != nil {
-		object["symbol"], err = json.Marshal(t.Symbol)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'symbol': %w", err)
-		}
-	}
-	b, err = json.Marshal(object)
-	return b, err
-}
-
-func (t *Units) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	if err != nil {
-		return err
-	}
-	object := make(map[string]json.RawMessage)
-	err = json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["id"]; found {
-		err = json.Unmarshal(raw, &t.Id)
-		if err != nil {
-			return fmt.Errorf("error reading 'id': %w", err)
-		}
-	}
-
-	if raw, found := object["label"]; found {
-		err = json.Unmarshal(raw, &t.Label)
-		if err != nil {
-			return fmt.Errorf("error reading 'label': %w", err)
-		}
-	}
-
-	if raw, found := object["symbol"]; found {
-		err = json.Unmarshal(raw, &t.Symbol)
-		if err != nil {
-			return fmt.Errorf("error reading 'symbol': %w", err)
-		}
-	}
-
-	return err
-}
-
-// AsUnitsSymbol0 returns the union data inside the Units_Symbol as a UnitsSymbol0
-func (t Units_Symbol) AsUnitsSymbol0() (UnitsSymbol0, error) {
-	var body UnitsSymbol0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnitsSymbol0 overwrites any union data inside the Units_Symbol as the provided UnitsSymbol0
-func (t *Units_Symbol) FromUnitsSymbol0(v UnitsSymbol0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnitsSymbol0 performs a merge with any union data inside the Units_Symbol, using the provided UnitsSymbol0
-func (t *Units_Symbol) MergeUnitsSymbol0(v UnitsSymbol0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsUnitsSymbol1 returns the union data inside the Units_Symbol as a UnitsSymbol1
-func (t Units_Symbol) AsUnitsSymbol1() (UnitsSymbol1, error) {
-	var body UnitsSymbol1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromUnitsSymbol1 overwrites any union data inside the Units_Symbol as the provided UnitsSymbol1
-func (t *Units_Symbol) FromUnitsSymbol1(v UnitsSymbol1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeUnitsSymbol1 performs a merge with any union data inside the Units_Symbol, using the provided UnitsSymbol1
-func (t *Units_Symbol) MergeUnitsSymbol1(v UnitsSymbol1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t Units_Symbol) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *Units_Symbol) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
 	return err
 }
 
