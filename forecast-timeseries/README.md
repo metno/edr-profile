@@ -12,7 +12,7 @@ The docs for the profile contains the following:
 
 - `Conformance` class with a list of requirements for the profile.
 - [OpenAPI spec](openapi/forecast-ts.yaml) compliant with the profile.
-- A [golang example service](go-example-service) compliant with the profile.
+- A [golang example service](go-example-service/README.md) compliant with the profile.
 
 OpenAPI specifications in this profile was copied from https://github.com/opengeospatial/ogcapi-environmental-data-retrieval, and then modified to fit the profile.
 
@@ -30,39 +30,35 @@ OpenAPI specifications in this profile was copied from https://github.com/openge
 
 ## Requirements
 
-### Requirement A.1
+### Requirement 1
 
-#### /response_format
+#### Collections
 
-- A: The response format for a point data query SHALL be a CoverageJSON document with media type application/vnd.cov+json.
-- B: The response format for a 5xx response SHALL be....
-- C: DomainType SHALL be PointSeries.
+- A: A collection represents a forecast data source (e.g NWP model). The id of a collection SHOULD contain the name of that forecast data source.
+- B: temporal extent SHALL either be null or specify the start and end time that cover all instances of this collection.
+- C: parameter_names includes all parameters mentioned in at least one of the instances. No guarantee that a parameter will be available for all instances.
+- D: Use the CF convention to describe parameters when possible. If no term exists in the CF-convention, refer to another standard vocabulary. The key to parameter_names SHALL be the standard_name of the parameter in that vocabulary.
 
-### Requirement A.2
+### Requirement 2
 
-#### /collections
+#### Collection instances
 
-- A: temporal extent SHALL either be null or specify the start and end time that cover all instances of this collection.
-- B: parameter_names includes all parameters mentioned in at least one of the instances. No guarantee that a parameter will be available for all instances.
-- C: Use the CF convention to describe parameters when possible. If no term exists in the CF-convention, refer to another standard vocabulary. The key to parameter_names SHALL be the standard_name of the parameter in that vocabulary.
-
-#### /collections/<collectionid>/instances/<instanceid>/
-
-- A: id SHALL represent the reference time of the forecast model, the value of the id parameter SHALL be on on the format `20240101T000000Z`.
+- A: id of an instance SHALL represent the reference time of the forecast model run, the value of the id parameter SHALL be on on the format `20240101T000000Z`.
 - B: CRS must be WGS 84: http://www.opengis.net/def/crs/OGC/1.3/CRS84.
 - C: All temporal values are on ISO-8601 format: http://www.opengis.net/def/uom/ISO-8601/0/Gregorian.
 - D: temporal extent MUST describe the start and end of the model forecast run that this instance represent.
 - E: parameter_names must list the exact parameters available in this instance of the collection.
 
-### Requirement A.3
+### Requirement 3
 
-#### /collections/data_queries
+#### Data queries
 
 - A: Only position and location data queries are supported.
-- B: Each collection supports a maximum of one type of vertical level(meter, model level, pressure). This vertical level is described in the vertical property of the extent in a collection response and in the CoverageJSON data query response as axis z in the domain object.
+- B: Each collection supports a maximum of one type of vertical level(meter, model level, pressure). So  each type of vertical level will be represented by a separate collection.
+- C: A collection may be queried directly, in addition to queries through its instances. If this is supported, that query SHALL be done against the most recent instance of the collection.
 
-### Requirement B.1
+### Requirement 4
 
-#### /collections/response
+#### Response format for data queries
 
 - A: The response to a data query request SHALL be CoverageJSON with domainType PointSeries.
