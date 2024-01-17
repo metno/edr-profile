@@ -696,12 +696,10 @@ components:
     positionLink:
       allOf:
         - $ref: '#/components/schemas/link'
-      properties:
-        href:
-          type: string
-          example: https://example.com/collections/monitoringsites/position
-        variables:
-          $ref: '#/components/schemas/positionDataQuery'
+        - type: object
+          properties:
+            variables:
+              $ref: '#/components/schemas/positionDataQuery'
     locationsDataQuery:
       allOf:
         - $ref: '#/components/schemas/DataQuery'

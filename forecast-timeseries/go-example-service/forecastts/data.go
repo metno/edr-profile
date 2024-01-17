@@ -103,10 +103,21 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 			Position: struct {
 				Link *PositionLink `json:"link,omitempty"`
 			}{
-				Link: &Link{
+				Link: &PositionLink{
 					Href:      fmt.Sprintf("%s/collections/%s/position?coords={coords}", h.baseURL, collectionId),
 					Rel:       "data",
 					Templated: ptr(true),
+					Variables: &PositionDataQuery{
+						OutputFormats:       []string{"CoverageJSON"},
+						DefaultOutputFormat: "CoverageJSON",
+						CrsDetails: []CrsObject{
+							{
+								Crs: "EPSG:4326",
+								Wkt: "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]",
+							},
+						},
+						Title: "Position query",
+					},
 				},
 			},
 		},

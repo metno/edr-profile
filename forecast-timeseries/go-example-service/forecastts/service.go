@@ -133,7 +133,7 @@ func (h *Handler) GetQueries(ctx echo.Context, collectionId CollectionId, params
 func (h *Handler) GetCollectionInstances(ctx echo.Context, collectionId CollectionId, params GetCollectionInstancesParams) error {
 	var collections []Collection
 	refTime := getTimes()[0]
-	id := refTime.Format("20060102150405")
+	id := refTime.Format("20060102T150405Z")
 	for _, collectionName := range []string{"MEPS"} {
 		collectionPath := fmt.Sprintf("collections/%s/instances/%s", collectionName, id)
 		collection, err := h.getCollection(id, collectionPath)

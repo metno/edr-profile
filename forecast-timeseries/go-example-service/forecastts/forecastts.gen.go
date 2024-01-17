@@ -789,7 +789,18 @@ type PolygonGeoJSONType string
 type PositionDataQuery = DataQuery
 
 // PositionLink defines model for positionLink.
-type PositionLink = Link
+type PositionLink struct {
+	Href     string  `json:"href"`
+	Hreflang *string `json:"hreflang,omitempty"`
+	Length   *int    `json:"length,omitempty"`
+	Rel      string  `json:"rel"`
+
+	// Templated defines if the link href value is a template with values requiring replacement
+	Templated *bool              `json:"templated,omitempty"`
+	Title     *string            `json:"title,omitempty"`
+	Type      *string            `json:"type,omitempty"`
+	Variables *PositionDataQuery `json:"variables,omitempty"`
+}
 
 // ReferenceSystem defines model for referenceSystem.
 type ReferenceSystem struct {

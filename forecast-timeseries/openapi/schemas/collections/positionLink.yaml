@@ -1,8 +1,6 @@
 allOf:
   - $ref: ../core/link.yaml
-properties:
-  href:
-    type: string
-    example: https://example.com/collections/monitoringsites/position
-  variables:
-    $ref: positionDataQuery.yaml
+  - type: object
+    properties:
+      variables:
+        $ref: positionDataQuery.yaml
