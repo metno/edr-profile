@@ -12,7 +12,7 @@ The docs for the profile contains the following:
 
 - `Conformance` class with a list of requirements for the profile.
 - [OpenAPI spec](openapi/forecast-ts.yaml) compliant with the profile.
-- A [golang example service](go-example-service/README.md) compliant with the profile.
+- [Examples](examples/) list examples of how responses from a compliant service will be.
 
 OpenAPI specifications in this profile was copied from https://github.com/opengeospatial/ogcapi-environmental-data-retrieval, and then modified to fit the profile.
 
