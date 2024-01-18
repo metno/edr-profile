@@ -1,0 +1,118 @@
+{
+    "instances": [
+        {
+            "crs": [
+                "CRS84"
+            ],
+            "data_queries": {
+                "position": {
+                    "link": {
+                        "href": "http://localhost:1323/collections/20240101T030000Z/position?coords={coords}",
+                        "rel": "data",
+                        "templated": true,
+                        "variables": {
+                            "crs_details": [
+                                {
+                                    "crs": "EPSG:4326",
+                                    "wkt": "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]"
+                                }
+                            ],
+                            "default_output_format": "CoverageJSON",
+                            "description": "",
+                            "output_formats": [
+                                "CoverageJSON"
+                            ],
+                            "title": "Position query"
+                        }
+                    }
+                }
+            },
+            "extent": {
+                "spatial": {
+                    "bbox": [
+                        [
+                            -180,
+                            90,
+                            180,
+                            -90
+                        ]
+                    ],
+                    "crs": "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]"
+                },
+                "temporal": {
+                    "interval": [
+                        [
+                            "2024-01-01T03:00:00Z",
+                            "2024-01-01T05:00:00Z"
+                        ]
+                    ],
+                    "trs": "https://tools.ietf.org/html/rfc3339#section-5.6",
+                    "values": [
+                        "2024-01-01T03:00:00Z",
+                        "2024-01-01T04:00:00Z",
+                        "2024-01-01T05:00:00Z"
+                    ]
+                },
+                "vertical": {
+                    "interval": [
+                        [
+                            "100000",
+                            "50000"
+                        ]
+                    ],
+                    "values": [
+                        "100000",
+                        "50000"
+                    ],
+                    "vrs": "PARAMETRICCRS[\"WMO standard atmosphere layer 0\",PDATUM[\"Mean Sea Level\",ANCHOR[\"101325 Pa at 15°C\"]],CS[parametric,1],AXIS[\"pressure (Pa)\",up],PARAMETRICUNIT[\"Pascal\",1.0]]"
+                }
+            },
+            "id": "20240101T030000Z",
+            "keywords": [
+                "forecast",
+                "timeseries",
+                "nordic",
+                "air_temperature"
+            ],
+            "links": [
+                {
+                    "href": "http://localhost:1323/collections/MEPS/instances/20240101T030000Z",
+                    "rel": "self",
+                    "type": "application/geo+json"
+                },
+                {
+                    "href": "http://localhost:1323/collections/MEPS/instances/20240101T030000Z/position",
+                    "rel": "data",
+                    "type": "application/vnd.cov+json"
+                }
+            ],
+            "output_formats": [
+                "CoverageJSON"
+            ],
+            "parameter_names": {
+                "air_temperature": {
+                    "observedProperty": {
+                        "id": "https://vocab.nerc.ac.uk/standard_name/air_temperature/",
+                        "label": "Temperature"
+                    },
+                    "type": "Parameter",
+                    "unit": {
+                        "label": "Kelvin",
+                        "symbol": {
+                            "type": "https://qudt.org/vocab/unit/K",
+                            "value": "K"
+                        }
+                    }
+                }
+            },
+            "title": "MEPS"
+        }
+    ],
+    "links": [
+        {
+            "href": "http://localhost:1323/collections/MEPS/instances/",
+            "rel": "self",
+            "type": "application/json"
+        }
+    ]
+}

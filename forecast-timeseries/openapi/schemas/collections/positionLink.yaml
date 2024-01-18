@@ -1,0 +1,6 @@
+allOf:
+  - $ref: ../core/link.yaml
+  - type: object
+    properties:
+      variables:
+        $ref: positionDataQuery.yaml

@@ -1,0 +1,32 @@
+type: object
+description: Object representing a multidimensional (>= 0D) array with named
+  axes, encoded as a flat one-dimensional array in row-major order
+properties:
+  type:
+    type: string
+    enum: 
+      - NdArray
+  dataType:
+    enum:
+      - float
+  shape:
+    type: array
+    items:
+      type: number
+  axisNames:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+  values:
+    type: array
+    items:
+      type: number
+      nullable: true
+    minItems: 1
+required:
+  - type
+  - dataType
+  - values
+  - shape
+  - axisNames

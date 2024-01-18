@@ -1,0 +1,24 @@
+type: object
+title: CoverageJSON
+description: A geospatial coverage interchange format based on JavaScript Object
+  Notation (JSON)
+required:
+  - type
+properties:
+  type:
+    description: Coverage domain type
+    type: string
+    enum:
+      - Coverage
+  domain:
+    "$ref": domain.yaml
+  parameters:
+    additionalProperties:
+        type: object
+        $ref: ../edr-geojson/parameter.yaml
+  ranges:
+    type: object
+    additionalProperties:
+ #       type: object
+        $ref: ndArray.yaml
+  
