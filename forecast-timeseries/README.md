@@ -45,7 +45,7 @@ OpenAPI specifications in this profile was copied from https://github.com/openge
 
 - A: id of an instance SHALL represent the reference time of the forecast model run, the value of the id parameter SHALL be on on the format `20240101T000000Z`.
 - B: CRS must be WGS 84: http://www.opengis.net/def/crs/OGC/1.3/CRS84.
-- C: All temporal values are on ISO-8601 format: http://www.opengis.net/def/uom/ISO-8601/0/Gregorian.
+- C: All temporal values are on the format: https://datatracker.ietf.org/doc/html/rfc3339#section-5.6.
 - D: temporal extent MUST describe the start and end of the model forecast run that this instance represent.
 - E: parameter_names must list the exact parameters available in this instance of the collection.
 

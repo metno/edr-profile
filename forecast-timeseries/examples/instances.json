@@ -7,7 +7,7 @@
             "data_queries": {
                 "position": {
                     "link": {
-                        "href": "http://localhost:1323/collections/20240101T030000Z/position?coords={coords}",
+                        "href": "http://localhost:1323/collections/MEPS/instances/20240101T030000Z/position?coords={coords}",
                         "rel": "data",
                         "templated": true,
                         "variables": {

@@ -104,7 +104,7 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 				Link *PositionLink `json:"link,omitempty"`
 			}{
 				Link: &PositionLink{
-					Href:      fmt.Sprintf("%s/collections/%s/position?coords={coords}", h.baseURL, collectionId),
+					Href:      fmt.Sprintf("%s/%s/position?coords={coords}", h.baseURL, collectionPath),
 					Rel:       "data",
 					Templated: ptr(true),
 					Variables: &PositionDataQuery{
