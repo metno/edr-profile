@@ -38,37 +38,9 @@ const (
 	Feature FeatureGeoJSONType = "Feature"
 )
 
-// Defines values for GeometrycollectionGeoJSONType.
-const (
-	GeometryCollection GeometrycollectionGeoJSONType = "GeometryCollection"
-)
-
 // Defines values for ItemsDataQueryQueryType.
 const (
 	Items ItemsDataQueryQueryType = "items"
-)
-
-// Defines values for LinestringGeoJSONType.
-const (
-	LineString   LinestringGeoJSONType = "LineString"
-	LineStringM  LinestringGeoJSONType = "LineStringM"
-	LineStringZ  LinestringGeoJSONType = "LineStringZ"
-	LineStringZM LinestringGeoJSONType = "LineStringZM"
-)
-
-// Defines values for MultilinestringGeoJSONType.
-const (
-	MultiLineString MultilinestringGeoJSONType = "MultiLineString"
-)
-
-// Defines values for MultipointGeoJSONType.
-const (
-	MultiPoint MultipointGeoJSONType = "MultiPoint"
-)
-
-// Defines values for MultipolygonGeoJSONType.
-const (
-	MultiPolygon MultipolygonGeoJSONType = "MultiPolygon"
 )
 
 // Defines values for NdArrayType.
@@ -96,11 +68,6 @@ const (
 // Defines values for PointGeoJSONType.
 const (
 	Point PointGeoJSONType = "Point"
-)
-
-// Defines values for PolygonGeoJSONType.
-const (
-	Polygon PolygonGeoJSONType = "Polygon"
 )
 
 // Defines values for ReferenceSystemType.
@@ -284,19 +251,16 @@ type EdrFeatureCollectionGeoJSON struct {
 // EdrFeatureCollectionGeoJSONType defines model for EdrFeatureCollectionGeoJSON.Type.
 type EdrFeatureCollectionGeoJSONType string
 
-// EdrProperties Properties to describe existing EDR features -- may be real-world or virtual sampling features.
-type EdrProperties struct {
-	// Datetime Either a date-time or a period string that adheres to RFC 3339. Indicates the time instant or period for which data are available from the EDR feature.
-	Datetime string `json:"datetime"`
-
+// EdrPropertiesForecastTS Properties to describe existing EDR features -- may be real-world or virtual sampling features.
+type EdrPropertiesForecastTS struct {
 	// Edrqueryendpoint A URI identifying the query end point. May identify a specific location.
 	Edrqueryendpoint string `json:"edrqueryendpoint"`
 
-	// Label A label such as a site name or other text to use on a link.
-	Label string `json:"label"`
+	// Name Object representing an internationalised string.
+	Name *I18n `json:"name,omitempty"`
 
 	// ParameterName Unique IDs of available parameters, this is the value used for querying the data and corresponds to an ID in the parameter metadata of the collection.
-	ParameterName []string `json:"parameter-name"`
+	ParameterName *[]string `json:"parameter-name,omitempty"`
 }
 
 // Exception defines model for exception.
@@ -412,29 +376,13 @@ type Extent_Spatial_Bbox_Item struct {
 
 // FeatureGeoJSON defines model for featureGeoJSON.
 type FeatureGeoJSON struct {
-	Geometry FeatureGeoJSON_Geometry `json:"geometry"`
-	Id       *FeatureGeoJSON_Id      `json:"id,omitempty"`
-	Links    *[]Link                 `json:"links,omitempty"`
+	Geometry PointGeoJSON `json:"geometry"`
+	Id       *string      `json:"id,omitempty"`
+	Links    *[]Link      `json:"links,omitempty"`
 
 	// Properties Properties to describe existing EDR features -- may be real-world or virtual sampling features.
-	Properties EdrProperties      `json:"properties"`
-	Type       FeatureGeoJSONType `json:"type"`
-}
-
-// FeatureGeoJSON_Geometry defines model for FeatureGeoJSON.Geometry.
-type FeatureGeoJSON_Geometry struct {
-	union json.RawMessage
-}
-
-// FeatureGeoJSONId0 defines model for .
-type FeatureGeoJSONId0 = string
-
-// FeatureGeoJSONId1 defines model for .
-type FeatureGeoJSONId1 = int
-
-// FeatureGeoJSON_Id defines model for FeatureGeoJSON.Id.
-type FeatureGeoJSON_Id struct {
-	union json.RawMessage
+	Properties EdrPropertiesForecastTS `json:"properties"`
+	Type       FeatureGeoJSONType      `json:"type"`
 }
 
 // FeatureGeoJSONType defines model for FeatureGeoJSON.Type.
@@ -451,20 +399,6 @@ type GeoJSONunit struct {
 		Value string `json:"value"`
 	} `json:"symbol,omitempty"`
 }
-
-// GeometrycollectionGeoJSON defines model for geometrycollectionGeoJSON.
-type GeometrycollectionGeoJSON struct {
-	Geometries []GeometrycollectionGeoJSON_Geometries_Item `json:"geometries"`
-	Type       GeometrycollectionGeoJSONType               `json:"type"`
-}
-
-// GeometrycollectionGeoJSON_Geometries_Item defines model for geometrycollectionGeoJSON.geometries.Item.
-type GeometrycollectionGeoJSON_Geometries_Item struct {
-	union json.RawMessage
-}
-
-// GeometrycollectionGeoJSONType defines model for GeometrycollectionGeoJSON.Type.
-type GeometrycollectionGeoJSONType string
 
 // I18n Object representing an internationalised string.
 type I18n map[string]string
@@ -526,15 +460,6 @@ type LandingPage struct {
 	Title *string `json:"title,omitempty"`
 }
 
-// LinestringGeoJSON defines model for linestringGeoJSON.
-type LinestringGeoJSON struct {
-	Coordinates [][][]float32         `json:"coordinates"`
-	Type        LinestringGeoJSONType `json:"type"`
-}
-
-// LinestringGeoJSONType defines model for LinestringGeoJSON.Type.
-type LinestringGeoJSONType string
-
 // Link defines model for link.
 type Link struct {
 	Href     string  `json:"href"`
@@ -552,39 +477,23 @@ type Link struct {
 type LocationsDataQuery = DataQuery
 
 // LocationsLink defines model for locationsLink.
-type LocationsLink = Link
+type LocationsLink struct {
+	Href     string  `json:"href"`
+	Hreflang *string `json:"hreflang,omitempty"`
+	Length   *int    `json:"length,omitempty"`
+	Rel      string  `json:"rel"`
+
+	// Templated defines if the link href value is a template with values requiring replacement
+	Templated *bool               `json:"templated,omitempty"`
+	Title     *string             `json:"title,omitempty"`
+	Type      *string             `json:"type,omitempty"`
+	Variables *LocationsDataQuery `json:"variables,omitempty"`
+}
 
 // MettsnumericValuesAxis Custom, simplified values axies for forecast timeseries profile.
 type MettsnumericValuesAxis struct {
 	Values *[]float32 `json:"values,omitempty"`
 }
-
-// MultilinestringGeoJSON defines model for multilinestringGeoJSON.
-type MultilinestringGeoJSON struct {
-	Coordinates [][][]float32              `json:"coordinates"`
-	Type        MultilinestringGeoJSONType `json:"type"`
-}
-
-// MultilinestringGeoJSONType defines model for MultilinestringGeoJSON.Type.
-type MultilinestringGeoJSONType string
-
-// MultipointGeoJSON defines model for multipointGeoJSON.
-type MultipointGeoJSON struct {
-	Coordinates [][]float32           `json:"coordinates"`
-	Type        MultipointGeoJSONType `json:"type"`
-}
-
-// MultipointGeoJSONType defines model for MultipointGeoJSON.Type.
-type MultipointGeoJSONType string
-
-// MultipolygonGeoJSON defines model for multipolygonGeoJSON.
-type MultipolygonGeoJSON struct {
-	Coordinates [][][][]float32         `json:"coordinates"`
-	Type        MultipolygonGeoJSONType `json:"type"`
-}
-
-// MultipolygonGeoJSONType defines model for MultipolygonGeoJSON.Type.
-type MultipolygonGeoJSONType string
 
 // NdArray Object representing a multidimensional (>= 0D) array with named axes, encoded as a flat one-dimensional array in row-major order
 type NdArray struct {
@@ -776,15 +685,6 @@ type PointGeoJSON struct {
 // PointGeoJSONType defines model for PointGeoJSON.Type.
 type PointGeoJSONType string
 
-// PolygonGeoJSON defines model for polygonGeoJSON.
-type PolygonGeoJSON struct {
-	Coordinates [][][]float32      `json:"coordinates"`
-	Type        PolygonGeoJSONType `json:"type"`
-}
-
-// PolygonGeoJSONType defines model for PolygonGeoJSON.Type.
-type PolygonGeoJSONType string
-
 // PositionDataQuery Property to contain any extra metadata information that is specific to an individual data query
 type PositionDataQuery = DataQuery
 
@@ -867,6 +767,9 @@ type F = string
 // InstanceId defines model for instanceId.
 type InstanceId = string
 
+// LocationId defines model for locationId.
+type LocationId = string
+
 // ParameterName defines model for parameter-name.
 type ParameterName = string
 
@@ -893,6 +796,12 @@ type N413 = Exception
 
 // Conformance defines model for conformance.
 type Conformance = ConfClasses
+
+// ItemsApplicationGeoPlusJSON defines model for items.
+type ItemsApplicationGeoPlusJSON = EdrFeatureCollectionGeoJSON
+
+// ItemsApplicationJSON defines model for items.
+type ItemsApplicationJSON = string
 
 // GetLandingPageParams defines parameters for GetLandingPage.
 type GetLandingPageParams struct {
@@ -954,6 +863,61 @@ type GetCollectionInstancesParams struct {
 	F *F `form:"f,omitempty" json:"f,omitempty"`
 }
 
+// ListDataInstanceLocationsParams defines parameters for ListDataInstanceLocations.
+type ListDataInstanceLocationsParams struct {
+	// Bbox Only features that have a geometry that intersects the bounding box are selected.
+	// The bounding box is provided as four or six numbers, depending on whether the
+	// coordinate reference system includes a vertical axis (height or depth):
+	// * Lower left corner, coordinate axis 1
+	// * Lower left corner, coordinate axis 2
+	// * Minimum value, coordinate axis 3 (optional)
+	// * Upper right corner, coordinate axis 1
+	// * Upper right corner, coordinate axis 2
+	// * Maximum value, coordinate axis 3 (optional)
+	// The coordinate reference system of the values is WGS 84 longitude/latitude
+	// (http://www.opengis.net/def/crs/OGC/1.3/CRS84) unless a different coordinate
+	// reference system is specified in the parameter `bbox-crs`.
+	// For WGS 84 longitude/latitude the values are in most cases the sequence of
+	// minimum longitude, minimum latitude, maximum longitude and maximum latitude.
+	// However, in cases where the box spans the antimeridian the first value
+	// (west-most box edge) is larger than the third value (east-most box edge).
+	// If the vertical axis is included, the third and the sixth number are the
+	// bottom and the top of the 3-dimensional bounding box.
+	// If a feature has multiple spatial geometry properties, it is the decision of the
+	// server whether only a single spatial geometry property is used to determine
+	// the extent or all relevant geometries.
+	Bbox *Bbox `form:"bbox,omitempty" json:"bbox,omitempty"`
+
+	// Datetime Either a date-time or an interval. Date and time expressions adhere to RFC 3339. Intervals may be bounded or half-bounded (double-dots at start or end).
+	// Examples:
+	// * A date-time: "2018-02-12T23:20:50Z" * A bounded interval: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z" * Half-bounded intervals: "2018-02-12T00:00:00Z/.." or "../2018-03-18T12:31:12Z"
+	// Only resources that have a temporal property that intersects the value of `datetime` are selected.
+	// If a feature has multiple temporal properties, it is the decision of the server whether only a single temporal property is used to determine the extent or all relevant temporal properties.
+	Datetime *Datetime `form:"datetime,omitempty" json:"datetime,omitempty"`
+}
+
+// ListDataInstanceLocationsParamsBbox0 defines parameters for ListDataInstanceLocations.
+type ListDataInstanceLocationsParamsBbox0 = []float32
+
+// ListDataInstanceLocationsParamsBbox1 defines parameters for ListDataInstanceLocations.
+type ListDataInstanceLocationsParamsBbox1 = []float32
+
+// GetInstanceDataForLocationParams defines parameters for GetInstanceDataForLocation.
+type GetInstanceDataForLocationParams struct {
+	// Datetime Either a date-time or an interval. Date and time expressions adhere to RFC 3339. Intervals may be bounded or half-bounded (double-dots at start or end).
+	// Examples:
+	// * A date-time: "2018-02-12T23:20:50Z" * A bounded interval: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z" * Half-bounded intervals: "2018-02-12T00:00:00Z/.." or "../2018-03-18T12:31:12Z"
+	// Only resources that have a temporal property that intersects the value of `datetime` are selected.
+	// If a feature has multiple temporal properties, it is the decision of the server whether only a single temporal property is used to determine the extent or all relevant temporal properties.
+	Datetime *Datetime `form:"datetime,omitempty" json:"datetime,omitempty"`
+
+	// Crs identifier (id) of the coordinate system to return data in list of valid crs identifiers for the chosen collection are defined in the metadata responses.  If not supplied the coordinate reference system will default to WGS84.
+	Crs *Crs `form:"crs,omitempty" json:"crs,omitempty"`
+
+	// F format to return the data response in
+	F *F `form:"f,omitempty" json:"f,omitempty"`
+}
+
 // GetInstanceDataForPointParams defines parameters for GetInstanceDataForPoint.
 type GetInstanceDataForPointParams struct {
 	// Coords location(s) to return data for, the coordinates are defined by a Well Known Text
@@ -1008,6 +972,64 @@ type GetInstanceDataForPointParams struct {
 	// When not specified data from all available heights SHOULD be returned
 	Z *Z `form:"z,omitempty" json:"z,omitempty"`
 
+	// Datetime Either a date-time or an interval. Date and time expressions adhere to RFC 3339. Intervals may be bounded or half-bounded (double-dots at start or end).
+	// Examples:
+	// * A date-time: "2018-02-12T23:20:50Z" * A bounded interval: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z" * Half-bounded intervals: "2018-02-12T00:00:00Z/.." or "../2018-03-18T12:31:12Z"
+	// Only resources that have a temporal property that intersects the value of `datetime` are selected.
+	// If a feature has multiple temporal properties, it is the decision of the server whether only a single temporal property is used to determine the extent or all relevant temporal properties.
+	Datetime *Datetime `form:"datetime,omitempty" json:"datetime,omitempty"`
+
+	// ParameterName comma delimited list of parameters to retrieve data for.  Valid parameters are listed in the collections metadata
+	ParameterName *ParameterName `form:"parameter-name,omitempty" json:"parameter-name,omitempty"`
+
+	// Crs identifier (id) of the coordinate system to return data in list of valid crs identifiers for the chosen collection are defined in the metadata responses.  If not supplied the coordinate reference system will default to WGS84.
+	Crs *Crs `form:"crs,omitempty" json:"crs,omitempty"`
+
+	// F format to return the data response in
+	F *F `form:"f,omitempty" json:"f,omitempty"`
+}
+
+// ListCollectionDataLocationsParams defines parameters for ListCollectionDataLocations.
+type ListCollectionDataLocationsParams struct {
+	// Bbox Only features that have a geometry that intersects the bounding box are selected.
+	// The bounding box is provided as four or six numbers, depending on whether the
+	// coordinate reference system includes a vertical axis (height or depth):
+	// * Lower left corner, coordinate axis 1
+	// * Lower left corner, coordinate axis 2
+	// * Minimum value, coordinate axis 3 (optional)
+	// * Upper right corner, coordinate axis 1
+	// * Upper right corner, coordinate axis 2
+	// * Maximum value, coordinate axis 3 (optional)
+	// The coordinate reference system of the values is WGS 84 longitude/latitude
+	// (http://www.opengis.net/def/crs/OGC/1.3/CRS84) unless a different coordinate
+	// reference system is specified in the parameter `bbox-crs`.
+	// For WGS 84 longitude/latitude the values are in most cases the sequence of
+	// minimum longitude, minimum latitude, maximum longitude and maximum latitude.
+	// However, in cases where the box spans the antimeridian the first value
+	// (west-most box edge) is larger than the third value (east-most box edge).
+	// If the vertical axis is included, the third and the sixth number are the
+	// bottom and the top of the 3-dimensional bounding box.
+	// If a feature has multiple spatial geometry properties, it is the decision of the
+	// server whether only a single spatial geometry property is used to determine
+	// the extent or all relevant geometries.
+	Bbox *Bbox `form:"bbox,omitempty" json:"bbox,omitempty"`
+
+	// Datetime Either a date-time or an interval. Date and time expressions adhere to RFC 3339. Intervals may be bounded or half-bounded (double-dots at start or end).
+	// Examples:
+	// * A date-time: "2018-02-12T23:20:50Z" * A bounded interval: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z" * Half-bounded intervals: "2018-02-12T00:00:00Z/.." or "../2018-03-18T12:31:12Z"
+	// Only resources that have a temporal property that intersects the value of `datetime` are selected.
+	// If a feature has multiple temporal properties, it is the decision of the server whether only a single temporal property is used to determine the extent or all relevant temporal properties.
+	Datetime *Datetime `form:"datetime,omitempty" json:"datetime,omitempty"`
+}
+
+// ListCollectionDataLocationsParamsBbox0 defines parameters for ListCollectionDataLocations.
+type ListCollectionDataLocationsParamsBbox0 = []float32
+
+// ListCollectionDataLocationsParamsBbox1 defines parameters for ListCollectionDataLocations.
+type ListCollectionDataLocationsParamsBbox1 = []float32
+
+// GetCollectionDataForLocationParams defines parameters for GetCollectionDataForLocation.
+type GetCollectionDataForLocationParams struct {
 	// Datetime Either a date-time or an interval. Date and time expressions adhere to RFC 3339. Intervals may be bounded or half-bounded (double-dots at start or end).
 	// Examples:
 	// * A date-time: "2018-02-12T23:20:50Z" * A bounded interval: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z" * Half-bounded intervals: "2018-02-12T00:00:00Z/.." or "../2018-03-18T12:31:12Z"
@@ -1160,426 +1182,6 @@ func (t Extent_Spatial_Bbox_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *Extent_Spatial_Bbox_Item) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsPointGeoJSON returns the union data inside the FeatureGeoJSON_Geometry as a PointGeoJSON
-func (t FeatureGeoJSON_Geometry) AsPointGeoJSON() (PointGeoJSON, error) {
-	var body PointGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromPointGeoJSON overwrites any union data inside the FeatureGeoJSON_Geometry as the provided PointGeoJSON
-func (t *FeatureGeoJSON_Geometry) FromPointGeoJSON(v PointGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergePointGeoJSON performs a merge with any union data inside the FeatureGeoJSON_Geometry, using the provided PointGeoJSON
-func (t *FeatureGeoJSON_Geometry) MergePointGeoJSON(v PointGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMultipointGeoJSON returns the union data inside the FeatureGeoJSON_Geometry as a MultipointGeoJSON
-func (t FeatureGeoJSON_Geometry) AsMultipointGeoJSON() (MultipointGeoJSON, error) {
-	var body MultipointGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMultipointGeoJSON overwrites any union data inside the FeatureGeoJSON_Geometry as the provided MultipointGeoJSON
-func (t *FeatureGeoJSON_Geometry) FromMultipointGeoJSON(v MultipointGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMultipointGeoJSON performs a merge with any union data inside the FeatureGeoJSON_Geometry, using the provided MultipointGeoJSON
-func (t *FeatureGeoJSON_Geometry) MergeMultipointGeoJSON(v MultipointGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsLinestringGeoJSON returns the union data inside the FeatureGeoJSON_Geometry as a LinestringGeoJSON
-func (t FeatureGeoJSON_Geometry) AsLinestringGeoJSON() (LinestringGeoJSON, error) {
-	var body LinestringGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromLinestringGeoJSON overwrites any union data inside the FeatureGeoJSON_Geometry as the provided LinestringGeoJSON
-func (t *FeatureGeoJSON_Geometry) FromLinestringGeoJSON(v LinestringGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeLinestringGeoJSON performs a merge with any union data inside the FeatureGeoJSON_Geometry, using the provided LinestringGeoJSON
-func (t *FeatureGeoJSON_Geometry) MergeLinestringGeoJSON(v LinestringGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMultilinestringGeoJSON returns the union data inside the FeatureGeoJSON_Geometry as a MultilinestringGeoJSON
-func (t FeatureGeoJSON_Geometry) AsMultilinestringGeoJSON() (MultilinestringGeoJSON, error) {
-	var body MultilinestringGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMultilinestringGeoJSON overwrites any union data inside the FeatureGeoJSON_Geometry as the provided MultilinestringGeoJSON
-func (t *FeatureGeoJSON_Geometry) FromMultilinestringGeoJSON(v MultilinestringGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMultilinestringGeoJSON performs a merge with any union data inside the FeatureGeoJSON_Geometry, using the provided MultilinestringGeoJSON
-func (t *FeatureGeoJSON_Geometry) MergeMultilinestringGeoJSON(v MultilinestringGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsPolygonGeoJSON returns the union data inside the FeatureGeoJSON_Geometry as a PolygonGeoJSON
-func (t FeatureGeoJSON_Geometry) AsPolygonGeoJSON() (PolygonGeoJSON, error) {
-	var body PolygonGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromPolygonGeoJSON overwrites any union data inside the FeatureGeoJSON_Geometry as the provided PolygonGeoJSON
-func (t *FeatureGeoJSON_Geometry) FromPolygonGeoJSON(v PolygonGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergePolygonGeoJSON performs a merge with any union data inside the FeatureGeoJSON_Geometry, using the provided PolygonGeoJSON
-func (t *FeatureGeoJSON_Geometry) MergePolygonGeoJSON(v PolygonGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMultipolygonGeoJSON returns the union data inside the FeatureGeoJSON_Geometry as a MultipolygonGeoJSON
-func (t FeatureGeoJSON_Geometry) AsMultipolygonGeoJSON() (MultipolygonGeoJSON, error) {
-	var body MultipolygonGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMultipolygonGeoJSON overwrites any union data inside the FeatureGeoJSON_Geometry as the provided MultipolygonGeoJSON
-func (t *FeatureGeoJSON_Geometry) FromMultipolygonGeoJSON(v MultipolygonGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMultipolygonGeoJSON performs a merge with any union data inside the FeatureGeoJSON_Geometry, using the provided MultipolygonGeoJSON
-func (t *FeatureGeoJSON_Geometry) MergeMultipolygonGeoJSON(v MultipolygonGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsGeometrycollectionGeoJSON returns the union data inside the FeatureGeoJSON_Geometry as a GeometrycollectionGeoJSON
-func (t FeatureGeoJSON_Geometry) AsGeometrycollectionGeoJSON() (GeometrycollectionGeoJSON, error) {
-	var body GeometrycollectionGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromGeometrycollectionGeoJSON overwrites any union data inside the FeatureGeoJSON_Geometry as the provided GeometrycollectionGeoJSON
-func (t *FeatureGeoJSON_Geometry) FromGeometrycollectionGeoJSON(v GeometrycollectionGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeGeometrycollectionGeoJSON performs a merge with any union data inside the FeatureGeoJSON_Geometry, using the provided GeometrycollectionGeoJSON
-func (t *FeatureGeoJSON_Geometry) MergeGeometrycollectionGeoJSON(v GeometrycollectionGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t FeatureGeoJSON_Geometry) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *FeatureGeoJSON_Geometry) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsFeatureGeoJSONId0 returns the union data inside the FeatureGeoJSON_Id as a FeatureGeoJSONId0
-func (t FeatureGeoJSON_Id) AsFeatureGeoJSONId0() (FeatureGeoJSONId0, error) {
-	var body FeatureGeoJSONId0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromFeatureGeoJSONId0 overwrites any union data inside the FeatureGeoJSON_Id as the provided FeatureGeoJSONId0
-func (t *FeatureGeoJSON_Id) FromFeatureGeoJSONId0(v FeatureGeoJSONId0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeFeatureGeoJSONId0 performs a merge with any union data inside the FeatureGeoJSON_Id, using the provided FeatureGeoJSONId0
-func (t *FeatureGeoJSON_Id) MergeFeatureGeoJSONId0(v FeatureGeoJSONId0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsFeatureGeoJSONId1 returns the union data inside the FeatureGeoJSON_Id as a FeatureGeoJSONId1
-func (t FeatureGeoJSON_Id) AsFeatureGeoJSONId1() (FeatureGeoJSONId1, error) {
-	var body FeatureGeoJSONId1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromFeatureGeoJSONId1 overwrites any union data inside the FeatureGeoJSON_Id as the provided FeatureGeoJSONId1
-func (t *FeatureGeoJSON_Id) FromFeatureGeoJSONId1(v FeatureGeoJSONId1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeFeatureGeoJSONId1 performs a merge with any union data inside the FeatureGeoJSON_Id, using the provided FeatureGeoJSONId1
-func (t *FeatureGeoJSON_Id) MergeFeatureGeoJSONId1(v FeatureGeoJSONId1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t FeatureGeoJSON_Id) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *FeatureGeoJSON_Id) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsPointGeoJSON returns the union data inside the GeometrycollectionGeoJSON_Geometries_Item as a PointGeoJSON
-func (t GeometrycollectionGeoJSON_Geometries_Item) AsPointGeoJSON() (PointGeoJSON, error) {
-	var body PointGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromPointGeoJSON overwrites any union data inside the GeometrycollectionGeoJSON_Geometries_Item as the provided PointGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) FromPointGeoJSON(v PointGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergePointGeoJSON performs a merge with any union data inside the GeometrycollectionGeoJSON_Geometries_Item, using the provided PointGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) MergePointGeoJSON(v PointGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMultipointGeoJSON returns the union data inside the GeometrycollectionGeoJSON_Geometries_Item as a MultipointGeoJSON
-func (t GeometrycollectionGeoJSON_Geometries_Item) AsMultipointGeoJSON() (MultipointGeoJSON, error) {
-	var body MultipointGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMultipointGeoJSON overwrites any union data inside the GeometrycollectionGeoJSON_Geometries_Item as the provided MultipointGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) FromMultipointGeoJSON(v MultipointGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMultipointGeoJSON performs a merge with any union data inside the GeometrycollectionGeoJSON_Geometries_Item, using the provided MultipointGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) MergeMultipointGeoJSON(v MultipointGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsLinestringGeoJSON returns the union data inside the GeometrycollectionGeoJSON_Geometries_Item as a LinestringGeoJSON
-func (t GeometrycollectionGeoJSON_Geometries_Item) AsLinestringGeoJSON() (LinestringGeoJSON, error) {
-	var body LinestringGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromLinestringGeoJSON overwrites any union data inside the GeometrycollectionGeoJSON_Geometries_Item as the provided LinestringGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) FromLinestringGeoJSON(v LinestringGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeLinestringGeoJSON performs a merge with any union data inside the GeometrycollectionGeoJSON_Geometries_Item, using the provided LinestringGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) MergeLinestringGeoJSON(v LinestringGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMultilinestringGeoJSON returns the union data inside the GeometrycollectionGeoJSON_Geometries_Item as a MultilinestringGeoJSON
-func (t GeometrycollectionGeoJSON_Geometries_Item) AsMultilinestringGeoJSON() (MultilinestringGeoJSON, error) {
-	var body MultilinestringGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMultilinestringGeoJSON overwrites any union data inside the GeometrycollectionGeoJSON_Geometries_Item as the provided MultilinestringGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) FromMultilinestringGeoJSON(v MultilinestringGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMultilinestringGeoJSON performs a merge with any union data inside the GeometrycollectionGeoJSON_Geometries_Item, using the provided MultilinestringGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) MergeMultilinestringGeoJSON(v MultilinestringGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsPolygonGeoJSON returns the union data inside the GeometrycollectionGeoJSON_Geometries_Item as a PolygonGeoJSON
-func (t GeometrycollectionGeoJSON_Geometries_Item) AsPolygonGeoJSON() (PolygonGeoJSON, error) {
-	var body PolygonGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromPolygonGeoJSON overwrites any union data inside the GeometrycollectionGeoJSON_Geometries_Item as the provided PolygonGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) FromPolygonGeoJSON(v PolygonGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergePolygonGeoJSON performs a merge with any union data inside the GeometrycollectionGeoJSON_Geometries_Item, using the provided PolygonGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) MergePolygonGeoJSON(v PolygonGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsMultipolygonGeoJSON returns the union data inside the GeometrycollectionGeoJSON_Geometries_Item as a MultipolygonGeoJSON
-func (t GeometrycollectionGeoJSON_Geometries_Item) AsMultipolygonGeoJSON() (MultipolygonGeoJSON, error) {
-	var body MultipolygonGeoJSON
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromMultipolygonGeoJSON overwrites any union data inside the GeometrycollectionGeoJSON_Geometries_Item as the provided MultipolygonGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) FromMultipolygonGeoJSON(v MultipolygonGeoJSON) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeMultipolygonGeoJSON performs a merge with any union data inside the GeometrycollectionGeoJSON_Geometries_Item, using the provided MultipolygonGeoJSON
-func (t *GeometrycollectionGeoJSON_Geometries_Item) MergeMultipolygonGeoJSON(v MultipolygonGeoJSON) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t GeometrycollectionGeoJSON_Geometries_Item) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *GeometrycollectionGeoJSON_Geometries_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -2065,9 +1667,21 @@ type ServerInterface interface {
 	// List data instances of {collectionId}
 	// (GET /collections/{collectionId}/instances)
 	GetCollectionInstances(ctx echo.Context, collectionId CollectionId, params GetCollectionInstancesParams) error
+	// List available location identifers for the instance
+	// (GET /collections/{collectionId}/instances/{instanceId}/locations)
+	ListDataInstanceLocations(ctx echo.Context, collectionId CollectionId, instanceId InstanceId, params ListDataInstanceLocationsParams) error
+	// Query end point for queries of instance {instanceId} of collection {collectionId} defined by a location id
+	// (GET /collections/{collectionId}/instances/{instanceId}/locations/{locationId})
+	GetInstanceDataForLocation(ctx echo.Context, collectionId CollectionId, instanceId InstanceId, locationId LocationId, params GetInstanceDataForLocationParams) error
 	// Query end point for position queries of instance {instanceId} of collection {collectionId}
 	// (GET /collections/{collectionId}/instances/{instanceId}/position)
 	GetInstanceDataForPoint(ctx echo.Context, collectionId CollectionId, instanceId InstanceId, params GetInstanceDataForPointParams) error
+	// List available location identifers for the collection
+	// (GET /collections/{collectionId}/locations)
+	ListCollectionDataLocations(ctx echo.Context, collectionId CollectionId, params ListCollectionDataLocationsParams) error
+	// Query end point for queries of collection {collectionId} defined by a location id
+	// (GET /collections/{collectionId}/locations/{locationId})
+	GetCollectionDataForLocation(ctx echo.Context, collectionId CollectionId, locationId LocationId, params GetCollectionDataForLocationParams) error
 	// Query end point for position queries  of collection {collectionId}
 	// (GET /collections/{collectionId}/position)
 	GetDataForPoint(ctx echo.Context, collectionId CollectionId, params GetDataForPointParams) error
@@ -2181,6 +1795,101 @@ func (w *ServerInterfaceWrapper) GetCollectionInstances(ctx echo.Context) error 
 	return err
 }
 
+// ListDataInstanceLocations converts echo context to params.
+func (w *ServerInterfaceWrapper) ListDataInstanceLocations(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "collectionId" -------------
+	var collectionId CollectionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "collectionId", ctx.Param("collectionId"), &collectionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter collectionId: %s", err))
+	}
+
+	// ------------- Path parameter "instanceId" -------------
+	var instanceId InstanceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "instanceId", ctx.Param("instanceId"), &instanceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter instanceId: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListDataInstanceLocationsParams
+	// ------------- Optional query parameter "bbox" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "bbox", ctx.QueryParams(), &params.Bbox)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter bbox: %s", err))
+	}
+
+	// ------------- Optional query parameter "datetime" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "datetime", ctx.QueryParams(), &params.Datetime)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter datetime: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ListDataInstanceLocations(ctx, collectionId, instanceId, params)
+	return err
+}
+
+// GetInstanceDataForLocation converts echo context to params.
+func (w *ServerInterfaceWrapper) GetInstanceDataForLocation(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "collectionId" -------------
+	var collectionId CollectionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "collectionId", ctx.Param("collectionId"), &collectionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter collectionId: %s", err))
+	}
+
+	// ------------- Path parameter "instanceId" -------------
+	var instanceId InstanceId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "instanceId", ctx.Param("instanceId"), &instanceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter instanceId: %s", err))
+	}
+
+	// ------------- Path parameter "locationId" -------------
+	var locationId LocationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "locationId", ctx.Param("locationId"), &locationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter locationId: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetInstanceDataForLocationParams
+	// ------------- Optional query parameter "datetime" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "datetime", ctx.QueryParams(), &params.Datetime)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter datetime: %s", err))
+	}
+
+	// ------------- Optional query parameter "crs" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "crs", ctx.QueryParams(), &params.Crs)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter crs: %s", err))
+	}
+
+	// ------------- Optional query parameter "f" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "f", ctx.QueryParams(), &params.F)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter f: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetInstanceDataForLocation(ctx, collectionId, instanceId, locationId, params)
+	return err
+}
+
 // GetInstanceDataForPoint converts echo context to params.
 func (w *ServerInterfaceWrapper) GetInstanceDataForPoint(ctx echo.Context) error {
 	var err error
@@ -2246,6 +1955,92 @@ func (w *ServerInterfaceWrapper) GetInstanceDataForPoint(ctx echo.Context) error
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetInstanceDataForPoint(ctx, collectionId, instanceId, params)
+	return err
+}
+
+// ListCollectionDataLocations converts echo context to params.
+func (w *ServerInterfaceWrapper) ListCollectionDataLocations(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "collectionId" -------------
+	var collectionId CollectionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "collectionId", ctx.Param("collectionId"), &collectionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter collectionId: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCollectionDataLocationsParams
+	// ------------- Optional query parameter "bbox" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "bbox", ctx.QueryParams(), &params.Bbox)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter bbox: %s", err))
+	}
+
+	// ------------- Optional query parameter "datetime" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "datetime", ctx.QueryParams(), &params.Datetime)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter datetime: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ListCollectionDataLocations(ctx, collectionId, params)
+	return err
+}
+
+// GetCollectionDataForLocation converts echo context to params.
+func (w *ServerInterfaceWrapper) GetCollectionDataForLocation(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "collectionId" -------------
+	var collectionId CollectionId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "collectionId", ctx.Param("collectionId"), &collectionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter collectionId: %s", err))
+	}
+
+	// ------------- Path parameter "locationId" -------------
+	var locationId LocationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "locationId", ctx.Param("locationId"), &locationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter locationId: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetCollectionDataForLocationParams
+	// ------------- Optional query parameter "datetime" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "datetime", ctx.QueryParams(), &params.Datetime)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter datetime: %s", err))
+	}
+
+	// ------------- Optional query parameter "parameter-name" -------------
+
+	err = runtime.BindQueryParameter("form", false, false, "parameter-name", ctx.QueryParams(), &params.ParameterName)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter parameter-name: %s", err))
+	}
+
+	// ------------- Optional query parameter "crs" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "crs", ctx.QueryParams(), &params.Crs)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter crs: %s", err))
+	}
+
+	// ------------- Optional query parameter "f" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "f", ctx.QueryParams(), &params.F)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter f: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetCollectionDataForLocation(ctx, collectionId, locationId, params)
 	return err
 }
 
@@ -2359,7 +2154,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/collections", wrapper.ListCollections)
 	router.GET(baseURL+"/collections/:collectionId", wrapper.GetQueries)
 	router.GET(baseURL+"/collections/:collectionId/instances", wrapper.GetCollectionInstances)
+	router.GET(baseURL+"/collections/:collectionId/instances/:instanceId/locations", wrapper.ListDataInstanceLocations)
+	router.GET(baseURL+"/collections/:collectionId/instances/:instanceId/locations/:locationId", wrapper.GetInstanceDataForLocation)
 	router.GET(baseURL+"/collections/:collectionId/instances/:instanceId/position", wrapper.GetInstanceDataForPoint)
+	router.GET(baseURL+"/collections/:collectionId/locations", wrapper.ListCollectionDataLocations)
+	router.GET(baseURL+"/collections/:collectionId/locations/:locationId", wrapper.GetCollectionDataForLocation)
 	router.GET(baseURL+"/collections/:collectionId/position", wrapper.GetDataForPoint)
 	router.GET(baseURL+"/conformance", wrapper.GetRequirementsClasses)
 

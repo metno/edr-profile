@@ -9,20 +9,11 @@ properties:
     enum:
       - Feature
   geometry:
-    oneOf:
-      - $ref: pointGeoJSON.yaml
-      - $ref: multipointGeoJSON.yaml
-      - $ref: linestringGeoJSON.yaml
-      - $ref: multilinestringGeoJSON.yaml
-      - $ref: polygonGeoJSON.yaml
-      - $ref: multipolygonGeoJSON.yaml
-      - $ref: geometrycollectionGeoJSON.yaml
+    $ref: pointGeoJSON.yaml
   properties:
-    $ref: ../edr-geojson/edrProperties.yaml
+    $ref: ../edr-geojson/edrPropertiesForecastTS.yaml
   id:
-    oneOf:
-      - type: string
-      - type: integer
+    type: string
   links:
     type: array
     items:

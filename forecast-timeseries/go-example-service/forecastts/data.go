@@ -116,7 +116,28 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 								Wkt: "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]",
 							},
 						},
-						Title: "Position query",
+						Description: "Query data by a specified geographical point.",
+						Title:       "Position query",
+					},
+				},
+			},
+			Locations: &struct {
+				Link *LocationsLink `json:"link,omitempty"`
+			}{
+				Link: &LocationsLink{
+					Href: fmt.Sprintf("%s/%s/locations", h.baseURL, collectionPath),
+					Rel:  "data",
+					Variables: &LocationsDataQuery{
+						OutputFormats:       []string{"CoverageJSON"},
+						DefaultOutputFormat: "CoverageJSON",
+						CrsDetails: []CrsObject{
+							{
+								Crs: "EPSG:4326",
+								Wkt: "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]",
+							},
+						},
+						Description: "Query list of geographical locations and data for one of those location.",
+						Title:       "Location query",
 					},
 				},
 			},
@@ -260,5 +281,30 @@ func covJsonForPoint() *CoverageJSON {
 		Parameters: &parameters,
 		Domain:     &domain,
 		Ranges:     &ranges,
+	}
+}
+
+func getLocations(basePath string) *EdrFeatureCollectionGeoJSON {
+	locationId := "oslo"
+	return &EdrFeatureCollectionGeoJSON{
+		Links: &[]Link{},
+		Features: []FeatureGeoJSON{
+			{
+				Type: "Feature",
+				Geometry: PointGeoJSON{
+					Type:        "Point",
+					Coordinates: []float32{11, 60},
+				},
+				Properties: EdrPropertiesForecastTS{
+					Name: &I18n{
+						"en": "Oslo",
+					},
+					Edrqueryendpoint: fmt.Sprintf("%s/locations/oslo", basePath),
+					ParameterName:    &[]string{"air_temperature"},
+				},
+				Id: &locationId,
+			},
+		},
+		Type: "FeatureCollection",
 	}
 }

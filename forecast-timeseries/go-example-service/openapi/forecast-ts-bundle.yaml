@@ -151,6 +151,117 @@ paths:
           $ref: '#/components/responses/413'
         default:
           $ref: '#/components/responses/exception'
+  /collections/{collectionId}/locations:
+    get:
+      tags:
+        - Collection data queries
+      summary: List available location identifers for the collection
+      description: List the locations available for the collection
+      operationId: ListCollectionDataLocations
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/datetime'
+      responses:
+        '200':
+          $ref: '#/components/responses/items'
+        '202':
+          $ref: '#/components/responses/202'
+        '308':
+          $ref: '#/components/responses/308'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '413':
+          $ref: '#/components/responses/413'
+        default:
+          $ref: '#/components/responses/exception'
+  /collections/{collectionId}/locations/{locationId}:
+    get:
+      tags:
+        - Collection data queries
+      summary: Query end point for queries of collection {collectionId} defined by a location id
+      description: Return data the for the location defined by locid
+      operationId: GetCollectionDataForLocation
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/locationId'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/parameter-name'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '202':
+          $ref: '#/components/responses/202'
+        '308':
+          $ref: '#/components/responses/308'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '413':
+          $ref: '#/components/responses/413'
+        default:
+          $ref: '#/components/responses/exception'
+  /collections/{collectionId}/instances/{instanceId}/locations:
+    get:
+      tags:
+        - Instance data queries
+      summary: List available location identifers for the instance
+      description: List the locations available for the instance of the collection
+      operationId: ListDataInstanceLocations
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/instanceId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/datetime'
+      responses:
+        '200':
+          $ref: '#/components/responses/items'
+        '202':
+          $ref: '#/components/responses/202'
+        '308':
+          $ref: '#/components/responses/308'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '413':
+          $ref: '#/components/responses/413'
+        default:
+          $ref: '#/components/responses/exception'
+  /collections/{collectionId}/instances/{instanceId}/locations/{locationId}:
+    get:
+      tags:
+        - Instance data queries
+      summary: Query end point for queries of instance {instanceId} of collection {collectionId} defined by a location id
+      description: Return data the for the location defined by locid
+      operationId: GetInstanceDataForLocation
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/instanceId'
+        - $ref: '#/components/parameters/locationId'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/crs'
+        - $ref: '#/components/parameters/f'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '202':
+          $ref: '#/components/responses/202'
+        '308':
+          $ref: '#/components/responses/308'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '413':
+          $ref: '#/components/responses/413'
+        default:
+          $ref: '#/components/responses/exception'
 components:
   parameters:
     f:
@@ -307,6 +418,13 @@ components:
       in: path
       description: Identifier (id) of a specific instance of a collection
       required: true
+      schema:
+        type: string
+    locationId:
+      name: locationId
+      in: path
+      required: true
+      description: Retreive data for the location defined by locId (i.e. London_Heathrow, EGLL, 03772 etc)
       schema:
         type: string
   schemas:
@@ -715,12 +833,10 @@ components:
     locationsLink:
       allOf:
         - $ref: '#/components/schemas/link'
-      properties:
-        href:
-          type: string
-          example: https://example.com/collections/monitoringsites/locations
-        variables:
-          $ref: '#/components/schemas/locationsDataQuery'
+        - type: object
+          properties:
+            variables:
+              $ref: '#/components/schemas/locationsDataQuery'
     itemsDataQuery:
       description: Property to contain any extra metadata information that is specific to an individual data queries
       type: object
@@ -1318,153 +1434,20 @@ components:
           minItems: 2
           items:
             type: number
-    multipointGeoJSON:
-      type: object
-      required:
-        - type
-        - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-            - MultiPoint
-        coordinates:
-          type: array
-          items:
-            type: array
-            minItems: 2
-            items:
-              type: number
-    linestringGeoJSON:
-      type: object
-      required:
-        - type
-        - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-            - LineString
-            - LineStringM
-            - LineStringZ
-            - LineStringZM
-        coordinates:
-          type: array
-          items:
-            type: array
-            minItems: 2
-            items:
-              type: array
-              minItems: 2
-              maxItems: 4
-              items:
-                type: number
-    multilinestringGeoJSON:
-      type: object
-      required:
-        - type
-        - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-            - MultiLineString
-        coordinates:
-          type: array
-          items:
-            type: array
-            minItems: 2
-            items:
-              type: array
-              minItems: 2
-              items:
-                type: number
-    polygonGeoJSON:
-      type: object
-      required:
-        - type
-        - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-            - Polygon
-        coordinates:
-          type: array
-          items:
-            type: array
-            minItems: 4
-            items:
-              type: array
-              minItems: 2
-              items:
-                type: number
-    multipolygonGeoJSON:
-      type: object
-      required:
-        - type
-        - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-            - MultiPolygon
-        coordinates:
-          type: array
-          items:
-            type: array
-            items:
-              type: array
-              minItems: 4
-              items:
-                type: array
-                minItems: 2
-                items:
-                  type: number
-    geometrycollectionGeoJSON:
-      type: object
-      required:
-        - type
-        - geometries
-      properties:
-        type:
-          type: string
-          enum:
-            - GeometryCollection
-        geometries:
-          type: array
-          items:
-            oneOf:
-              - $ref: '#/components/schemas/pointGeoJSON'
-              - $ref: '#/components/schemas/multipointGeoJSON'
-              - $ref: '#/components/schemas/linestringGeoJSON'
-              - $ref: '#/components/schemas/multilinestringGeoJSON'
-              - $ref: '#/components/schemas/polygonGeoJSON'
-              - $ref: '#/components/schemas/multipolygonGeoJSON'
-    edrProperties:
+    edrPropertiesForecastTS:
       type: object
       title: EDR GeoJSON Properties
       description: Properties to describe existing EDR features -- may be real-world or virtual sampling features.
       example:
-        - datetime: 2018-02-12T00:00:00Z/2018-03-18T12:31:12Z
-          label: Monitoring site name
+        - name:
+            en: Monitoring site name
           parameter-name:
             - velocity
-            - temperature
+            - air_temperature
           edrqueryendpoint: https://example.org/api/collections/collection/locations/location_123
       required:
-        - datetime
-        - parameter-name
-        - label
         - edrqueryendpoint
       properties:
-        datetime:
-          type: string
-          title: Date/time Domain
-          description: Either a date-time or a period string that adheres to RFC 3339. Indicates the time instant or period for which data are available from the EDR feature.
-          default: ''
-          example:
-            - 2018-02-12T00:00:00Z/2018-03-18T12:31:12Z
         parameter-name:
           type: array
           title: Available Parameters
@@ -1477,13 +1460,8 @@ components:
             example:
               - velocity
               - temperature
-        label:
-          type: string
-          title: Label
-          description: A label such as a site name or other text to use on a link.
-          default: ''
-          example:
-            - Site A
+        name:
+          $ref: '#/components/schemas/i18n'
         edrqueryendpoint:
           type: string
           title: EDR Query Endpoint
@@ -1503,20 +1481,11 @@ components:
           enum:
             - Feature
         geometry:
-          oneOf:
-            - $ref: '#/components/schemas/pointGeoJSON'
-            - $ref: '#/components/schemas/multipointGeoJSON'
-            - $ref: '#/components/schemas/linestringGeoJSON'
-            - $ref: '#/components/schemas/multilinestringGeoJSON'
-            - $ref: '#/components/schemas/polygonGeoJSON'
-            - $ref: '#/components/schemas/multipolygonGeoJSON'
-            - $ref: '#/components/schemas/geometrycollectionGeoJSON'
+          $ref: '#/components/schemas/pointGeoJSON'
         properties:
-          $ref: '#/components/schemas/edrProperties'
+          $ref: '#/components/schemas/edrPropertiesForecastTS'
         id:
-          oneOf:
-            - type: string
-            - type: integer
+          type: string
         links:
           type: array
           items:
@@ -1656,5 +1625,14 @@ components:
           schema:
             $ref: '#/components/schemas/instances'
         text/html:
+          schema:
+            type: string
+    items:
+      description: List of pre-existing items available for retrieval
+      content:
+        application/geo+json:
+          schema:
+            $ref: '#/components/schemas/edrFeatureCollectionGeoJSON'
+        application/json:
           schema:
             type: string

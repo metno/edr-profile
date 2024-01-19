@@ -1,0 +1,26 @@
+{
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    11,
+                    60
+                ],
+                "type": "Point"
+            },
+            "id": "oslo",
+            "properties": {
+                "edrqueryendpoint": "http://localhost:1323/collections/MEPS/instances/20240101T030000Z/locations/oslo",
+                "name": {
+                    "en": "Oslo"
+                },
+                "parameter-name": [
+                    "air_temperature"
+                ]
+            },
+            "type": "Feature"
+        }
+    ],
+    "links": [],
+    "type": "FeatureCollection"
+}

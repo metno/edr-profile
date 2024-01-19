@@ -62,6 +62,23 @@ func (h *Handler) GetLandingPage(ctx echo.Context, params GetLandingPageParams) 
 	return writer(params.F, ctx)(http.StatusOK, &ret)
 }
 
+// Information about standards that this API conforms to
+// (GET /conformance)
+func (h *Handler) GetRequirementsClasses(ctx echo.Context, params GetRequirementsClassesParams) error {
+	ret := ConfClasses{
+		ConformsTo: []string{
+			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/core",
+			"http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
+			"http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections",
+			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/oas30",
+			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/html",
+			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/geojson",
+			"https://pages.github.com/metno/edr-profile/forecast-timeseries-0.1",
+		},
+	}
+	return writer(params.F, ctx)(http.StatusOK, &ret)
+}
+
 // List the available collections from the service
 // (GET /collections)
 func (h *Handler) ListCollections(ctx echo.Context, params ListCollectionsParams) error {
@@ -186,21 +203,49 @@ func (h *Handler) GetInstanceDataForPoint(ctx echo.Context, collectionId Collect
 	//return writer(params.F, ctx)(http.StatusOK, covJsonForPoint())
 }
 
-// Information about standards that this API conforms to
-// (GET /conformance)
-func (h *Handler) GetRequirementsClasses(ctx echo.Context, params GetRequirementsClassesParams) error {
-	ret := ConfClasses{
-		ConformsTo: []string{
-			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/core",
-			"http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
-			"http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections",
-			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/oas30",
-			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/html",
-			"http://www.opengis.net/spec/ogcapi-edr-1/1.0/conf/geojson",
-			"https://pages.github.com/metno/edr-profile/forecast-timeseries-0.1",
-		},
+// List available location identifers for the collection
+// (GET /collections/{collectionId}/locations)
+func (h *Handler) ListCollectionDataLocations(ctx echo.Context, collectionId CollectionId, params ListCollectionDataLocationsParams) error {
+	locationsData := getLocations(fmt.Sprintf("%s/collections/%s", h.baseURL, collectionId))
+	payload, err := json.Marshal(locationsData)
+	if err != nil {
+		return err
 	}
-	return writer(params.F, ctx)(http.StatusOK, &ret)
+	return ctx.Blob(http.StatusOK, "application/geo+json", payload)
+}
+
+// List available location identifers for the instance
+// (GET /collections/{collectionId}/instances/{instanceId}/locations)
+func (h *Handler) ListDataInstanceLocations(ctx echo.Context, collectionId CollectionId, instanceId InstanceId, params ListDataInstanceLocationsParams) error {
+	locationsData := getLocations(fmt.Sprintf("%s/collections/%s/instances/%s",
+		h.baseURL, collectionId, instanceId))
+	payload, err := json.Marshal(locationsData)
+	if err != nil {
+		return err
+	}
+	return ctx.Blob(http.StatusOK, "application/geo+json", payload)
+}
+
+// Query end point for queries of collection {collectionId} defined by a location id
+// (GET /collections/{collectionId}/locations/{locationId})
+func (h *Handler) GetCollectionDataForLocation(ctx echo.Context, collectionId CollectionId, locationId LocationId, params GetCollectionDataForLocationParams) error {
+	pointData := covJsonForPoint()
+	payload, err := json.Marshal(pointData)
+	if err != nil {
+		return err
+	}
+	return ctx.Blob(http.StatusOK, "application/vnd.cov+json", payload)
+}
+
+// Query end point for queries of instance {instanceId} of collection {collectionId} defined by a location id
+// (GET /collections/{collectionId}/instances/{instanceId}/locations/{locationId})
+func (h *Handler) GetInstanceDataForLocation(ctx echo.Context, collectionId CollectionId, instanceId InstanceId, locationId LocationId, params GetInstanceDataForLocationParams) error {
+	pointData := covJsonForPoint()
+	payload, err := json.Marshal(pointData)
+	if err != nil {
+		return err
+	}
+	return ctx.Blob(http.StatusOK, "application/vnd.cov+json", payload)
 }
 
 func writer(f *F, ctx echo.Context) func(code int, i interface{}) error {
