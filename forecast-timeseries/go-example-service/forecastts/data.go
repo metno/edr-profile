@@ -14,7 +14,7 @@ func getTimes() []time.Time {
 	return times
 }
 
-func (h *Handler) getCollection(collectionId CollectionId, collectionPath string) (*Collection, error) {
+func (h *Handler) baseCollection(collectionId CollectionId, collectionPath string) (*Collection, error) {
 	parameterNameID := "https://vocab.nerc.ac.uk/standard_name/air_temperature/"
 	parameterNameLabel := ObservedPropertyCollection_Label{}
 	parameterNameLabel.FromObservedPropertyCollectionLabel0(
@@ -23,6 +23,10 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 	symbolValue := "K"
 	symbolType := "https://qudt.org/vocab/unit/K"
 
+	defaultFormat := "CoverageJSON"
+	positionDescription := "Query data by a specified geographical point."
+	locationsDescription := "Query list of geographical locations and data for one of those location."
+
 	times := getTimes()
 
 	return &Collection{
@@ -30,18 +34,6 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 		Id:       collectionId,
 		Title:    ptr("MEPS"),
 		Keywords: &[]string{"forecast", "timeseries", "nordic", "air_temperature"},
-		Links: []Link{
-			{
-				Href: fmt.Sprintf("%s/%s", h.baseURL, collectionPath),
-				Rel:  "self",
-				Type: ptr("application/geo+json"),
-			},
-			{
-				Href: fmt.Sprintf("%s/%s/position", h.baseURL, collectionPath),
-				Rel:  "data",
-				Type: ptr("application/vnd.cov+json"),
-			},
-		},
 		Extent: Extent{
 			Spatial: &struct {
 				Bbox []Extent_Spatial_Bbox_Item "json:\"bbox\""
@@ -90,15 +82,18 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 		},
 		// // Detailed information relevant to individual query types.
 		DataQueries: struct {
+			Instances *struct {
+				Link *InstancesLink "json:\"link,omitempty\""
+			} "json:\"instances,omitempty\""
 			Items *struct {
-				Link *ItemsLink `json:"link,omitempty"`
-			} `json:"items,omitempty"`
+				Link *Link "json:\"link,omitempty\""
+			} "json:\"items,omitempty\""
 			Locations *struct {
-				Link *LocationsLink `json:"link,omitempty"`
-			} `json:"locations,omitempty"`
+				Link *LocationsLink "json:\"link,omitempty\""
+			} "json:\"locations,omitempty\""
 			Position struct {
-				Link *PositionLink `json:"link,omitempty"`
-			} `json:"position"`
+				Link *PositionLink "json:\"link,omitempty\""
+			} "json:\"position\""
 		}{
 			Position: struct {
 				Link *PositionLink `json:"link,omitempty"`
@@ -108,16 +103,16 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 					Rel:       "data",
 					Templated: ptr(true),
 					Variables: &PositionDataQuery{
-						OutputFormats:       []string{"CoverageJSON"},
-						DefaultOutputFormat: "CoverageJSON",
-						CrsDetails: []CrsObject{
+						OutputFormats:       &[]string{"CoverageJSON"},
+						DefaultOutputFormat: &defaultFormat,
+						CrsDetails: &[]CrsObject{
 							{
 								Crs: "EPSG:4326",
 								Wkt: "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]",
 							},
 						},
-						Description: "Query data by a specified geographical point.",
-						Title:       "Position query",
+						Description: &positionDescription,
+						QueryType:   "position",
 					},
 				},
 			},
@@ -128,16 +123,16 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 					Href: fmt.Sprintf("%s/%s/locations", h.baseURL, collectionPath),
 					Rel:  "data",
 					Variables: &LocationsDataQuery{
-						OutputFormats:       []string{"CoverageJSON"},
-						DefaultOutputFormat: "CoverageJSON",
-						CrsDetails: []CrsObject{
+						OutputFormats:       &[]string{"CoverageJSON"},
+						DefaultOutputFormat: &defaultFormat,
+						CrsDetails: &[]CrsObject{
 							{
 								Crs: "EPSG:4326",
 								Wkt: "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]",
 							},
 						},
-						Description: "Query list of geographical locations and data for one of those location.",
-						Title:       "Location query",
+						Description: &locationsDescription,
+						QueryType:   "locations",
 					},
 				},
 			},
@@ -163,6 +158,41 @@ func (h *Handler) getCollection(collectionId CollectionId, collectionPath string
 			},
 		},
 	}, nil
+}
+
+func (h *Handler) getInstanceCollection(collectionId CollectionId, collectionPath string) (*Collection, error) {
+	return h.baseCollection(collectionId, collectionPath)
+}
+
+func (h *Handler) getCollection(collectionId CollectionId, collectionPath string) (*Collection, error) {
+	collection, _ := h.baseCollection(collectionId, collectionPath)
+
+	collection.DataQueries.Instances = &struct {
+		Link *InstancesLink `json:"link,omitempty"`
+	}{
+		Link: &InstancesLink{
+			Href: fmt.Sprintf("%s/%s/instances", h.baseURL, collectionPath),
+			Rel:  "data",
+			Variables: &InstancesDataQuery{
+				QueryType: "instances",
+			},
+		},
+	}
+
+	collection.Links = append(collection.Links,
+		Link{
+			Href: fmt.Sprintf("%s/collections/%s/instances", h.baseURL, collectionId),
+			Rel:  "collection",
+			Type: ptr("application/json"),
+		})
+	collection.Links = append(collection.Links,
+		Link{
+			Href: fmt.Sprintf("%s/%s", h.baseURL, collectionPath),
+			Rel:  "self",
+			Type: ptr("application/geo+json"),
+		})
+
+	return collection, nil
 }
 
 func covJsonForPoint() *CoverageJSON {

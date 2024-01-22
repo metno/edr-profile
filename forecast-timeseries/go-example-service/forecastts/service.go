@@ -135,13 +135,6 @@ func (h *Handler) GetQueries(ctx echo.Context, collectionId CollectionId, params
 			},
 		)
 	}
-	ret.Links = append(ret.Links,
-		Link{
-			Href: fmt.Sprintf("%s/collections/%s/instances", h.baseURL, collectionId),
-			Rel:  "collection",
-			Type: ptr("application/json"),
-		})
-
 	return writer(params.F, ctx)(http.StatusOK, &ret)
 }
 
@@ -153,7 +146,7 @@ func (h *Handler) GetCollectionInstances(ctx echo.Context, collectionId Collecti
 	id := refTime.Format("20060102T150405Z")
 	for _, collectionName := range []string{"MEPS"} {
 		collectionPath := fmt.Sprintf("collections/%s/instances/%s", collectionName, id)
-		collection, err := h.getCollection(id, collectionPath)
+		collection, err := h.getInstanceCollection(id, collectionPath)
 		if err != nil {
 			return writer(params.F, ctx)(http.StatusInternalServerError,
 				Exception{

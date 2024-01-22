@@ -768,12 +768,6 @@ components:
     DataQuery:
       description: Property to contain any extra metadata information that is specific to an individual data query
       type: object
-      required:
-        - title
-        - description
-        - output_formats
-        - default_output_format
-        - crs_details
       properties:
         title:
           description: title of the query
@@ -802,15 +796,16 @@ components:
     positionDataQuery:
       allOf:
         - $ref: '#/components/schemas/DataQuery'
-      required:
-        - query_type
-      properties:
-        query_type:
-          description: Type of EDR query
-          type: string
-          enum:
-            - position
-          example: position
+        - type: object
+          required:
+            - query_type
+          properties:
+            query_type:
+              description: Type of EDR query
+              type: string
+              enum:
+                - position
+              example: position
     positionLink:
       allOf:
         - $ref: '#/components/schemas/link'
@@ -821,15 +816,16 @@ components:
     locationsDataQuery:
       allOf:
         - $ref: '#/components/schemas/DataQuery'
-      required:
-        - query_type
-      properties:
-        query_type:
-          description: Type of EDR query
-          type: string
-          enum:
-            - locations
-          example: locations
+        - type: object
+          required:
+            - query_type
+          properties:
+            query_type:
+              description: Type of EDR query
+              type: string
+              enum:
+                - locations
+              example: locations
     locationsLink:
       allOf:
         - $ref: '#/components/schemas/link'
@@ -864,6 +860,29 @@ components:
           example: https://example.com/collections/monitoringsites/items
         variables:
           $ref: '#/components/schemas/itemsDataQuery'
+    instancesDataQuery:
+      allOf:
+        - $ref: '#/components/schemas/DataQuery'
+        - type: object
+          required:
+            - query_type
+          properties:
+            query_type:
+              description: Type of EDR query
+              type: string
+              enum:
+                - instances
+              example: instances
+    instancesLink:
+      allOf:
+        - $ref: '#/components/schemas/link'
+        - type: object
+          properties:
+            href:
+              type: string
+              example: https://example.com/collections/monitoringsites/locations
+            variables:
+              $ref: '#/components/schemas/instancesDataQuery'
     collectionUnitSymbol:
       title: Describe unit symbol
       type: object
@@ -1101,6 +1120,11 @@ components:
               properties:
                 link:
                   $ref: '#/components/schemas/itemsLink'
+            instances:
+              type: object
+              properties:
+                link:
+                  $ref: '#/components/schemas/instancesLink'
         crs:
           description: list of the coordinate reference systems the collection results can support
           type: array

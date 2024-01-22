@@ -38,9 +38,19 @@ const (
 	Feature FeatureGeoJSONType = "Feature"
 )
 
+// Defines values for InstancesDataQueryQueryType.
+const (
+	InstancesDataQueryQueryTypeInstances InstancesDataQueryQueryType = "instances"
+)
+
 // Defines values for ItemsDataQueryQueryType.
 const (
 	Items ItemsDataQueryQueryType = "items"
+)
+
+// Defines values for LocationsDataQueryQueryType.
+const (
+	Locations LocationsDataQueryQueryType = "locations"
 )
 
 // Defines values for NdArrayType.
@@ -70,6 +80,11 @@ const (
 	Point PointGeoJSONType = "Point"
 )
 
+// Defines values for PositionDataQueryQueryType.
+const (
+	Position PositionDataQueryQueryType = "position"
+)
+
 // Defines values for ReferenceSystemType.
 const (
 	GeographicCRS ReferenceSystemType = "GeographicCRS"
@@ -81,19 +96,19 @@ const (
 // DataQuery Property to contain any extra metadata information that is specific to an individual data query
 type DataQuery struct {
 	// CrsDetails List of key/value definitions for the CRS's supported by the Position query.  The key is the query parameter and the value is the Well Known Text description
-	CrsDetails []CrsObject `json:"crs_details"`
+	CrsDetails *[]CrsObject `json:"crs_details,omitempty"`
 
 	// DefaultOutputFormat default output format for the Position query
-	DefaultOutputFormat string `json:"default_output_format"`
+	DefaultOutputFormat *string `json:"default_output_format,omitempty"`
 
 	// Description description of the query
-	Description string `json:"description"`
+	Description *string `json:"description,omitempty"`
 
 	// OutputFormats list of output formats supported by the Position query
-	OutputFormats []string `json:"output_formats"`
+	OutputFormats *[]string `json:"output_formats,omitempty"`
 
 	// Title title of the query
-	Title string `json:"title"`
+	Title *string `json:"title,omitempty"`
 }
 
 // Collection defines model for collection.
@@ -103,6 +118,9 @@ type Collection struct {
 
 	// DataQueries Detailed information relevant to individual query types
 	DataQueries struct {
+		Instances *struct {
+			Link *InstancesLink `json:"link,omitempty"`
+		} `json:"instances,omitempty"`
 		Items *struct {
 			Link *ItemsLink `json:"link,omitempty"`
 		} `json:"items,omitempty"`
@@ -409,6 +427,44 @@ type Instances struct {
 	Links     []Link       `json:"links"`
 }
 
+// InstancesDataQuery defines model for instancesDataQuery.
+type InstancesDataQuery struct {
+	// CrsDetails List of key/value definitions for the CRS's supported by the Position query.  The key is the query parameter and the value is the Well Known Text description
+	CrsDetails *[]CrsObject `json:"crs_details,omitempty"`
+
+	// DefaultOutputFormat default output format for the Position query
+	DefaultOutputFormat *string `json:"default_output_format,omitempty"`
+
+	// Description description of the query
+	Description *string `json:"description,omitempty"`
+
+	// OutputFormats list of output formats supported by the Position query
+	OutputFormats *[]string `json:"output_formats,omitempty"`
+
+	// QueryType Type of EDR query
+	QueryType InstancesDataQueryQueryType `json:"query_type"`
+
+	// Title title of the query
+	Title *string `json:"title,omitempty"`
+}
+
+// InstancesDataQueryQueryType Type of EDR query
+type InstancesDataQueryQueryType string
+
+// InstancesLink defines model for instancesLink.
+type InstancesLink struct {
+	Href     string  `json:"href"`
+	Hreflang *string `json:"hreflang,omitempty"`
+	Length   *int    `json:"length,omitempty"`
+	Rel      string  `json:"rel"`
+
+	// Templated defines if the link href value is a template with values requiring replacement
+	Templated *bool               `json:"templated,omitempty"`
+	Title     *string             `json:"title,omitempty"`
+	Type      *string             `json:"type,omitempty"`
+	Variables *InstancesDataQuery `json:"variables,omitempty"`
+}
+
 // ItemsDataQuery Property to contain any extra metadata information that is specific to an individual data queries
 type ItemsDataQuery struct {
 	// Description description of the query
@@ -473,8 +529,29 @@ type Link struct {
 	Type      *string `json:"type,omitempty"`
 }
 
-// LocationsDataQuery Property to contain any extra metadata information that is specific to an individual data query
-type LocationsDataQuery = DataQuery
+// LocationsDataQuery defines model for locationsDataQuery.
+type LocationsDataQuery struct {
+	// CrsDetails List of key/value definitions for the CRS's supported by the Position query.  The key is the query parameter and the value is the Well Known Text description
+	CrsDetails *[]CrsObject `json:"crs_details,omitempty"`
+
+	// DefaultOutputFormat default output format for the Position query
+	DefaultOutputFormat *string `json:"default_output_format,omitempty"`
+
+	// Description description of the query
+	Description *string `json:"description,omitempty"`
+
+	// OutputFormats list of output formats supported by the Position query
+	OutputFormats *[]string `json:"output_formats,omitempty"`
+
+	// QueryType Type of EDR query
+	QueryType LocationsDataQueryQueryType `json:"query_type"`
+
+	// Title title of the query
+	Title *string `json:"title,omitempty"`
+}
+
+// LocationsDataQueryQueryType Type of EDR query
+type LocationsDataQueryQueryType string
 
 // LocationsLink defines model for locationsLink.
 type LocationsLink struct {
@@ -685,8 +762,29 @@ type PointGeoJSON struct {
 // PointGeoJSONType defines model for PointGeoJSON.Type.
 type PointGeoJSONType string
 
-// PositionDataQuery Property to contain any extra metadata information that is specific to an individual data query
-type PositionDataQuery = DataQuery
+// PositionDataQuery defines model for positionDataQuery.
+type PositionDataQuery struct {
+	// CrsDetails List of key/value definitions for the CRS's supported by the Position query.  The key is the query parameter and the value is the Well Known Text description
+	CrsDetails *[]CrsObject `json:"crs_details,omitempty"`
+
+	// DefaultOutputFormat default output format for the Position query
+	DefaultOutputFormat *string `json:"default_output_format,omitempty"`
+
+	// Description description of the query
+	Description *string `json:"description,omitempty"`
+
+	// OutputFormats list of output formats supported by the Position query
+	OutputFormats *[]string `json:"output_formats,omitempty"`
+
+	// QueryType Type of EDR query
+	QueryType PositionDataQueryQueryType `json:"query_type"`
+
+	// Title title of the query
+	Title *string `json:"title,omitempty"`
+}
+
+// PositionDataQueryQueryType Type of EDR query
+type PositionDataQueryQueryType string
 
 // PositionLink defines model for positionLink.
 type PositionLink struct {
