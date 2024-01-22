@@ -5,6 +5,15 @@
                 "CRS84"
             ],
             "data_queries": {
+                "instances": {
+                    "link": {
+                        "href": "http://localhost:1323/collections/MEPS/instances",
+                        "rel": "data",
+                        "variables": {
+                            "query_type": "instances"
+                        }
+                    }
+                },
                 "locations": {
                     "link": {
                         "href": "http://localhost:1323/collections/MEPS/locations",
@@ -21,7 +30,7 @@
                             "output_formats": [
                                 "CoverageJSON"
                             ],
-                            "title": "Location query"
+                            "query_type": "locations"
                         }
                     }
                 },
@@ -42,7 +51,7 @@
                             "output_formats": [
                                 "CoverageJSON"
                             ],
-                            "title": "Position query"
+                            "query_type": "position"
                         }
                     }
                 }
@@ -96,14 +105,14 @@
             ],
             "links": [
                 {
+                    "href": "http://localhost:1323/collections/MEPS/instances",
+                    "rel": "collection",
+                    "type": "application/json"
+                },
+                {
                     "href": "http://localhost:1323/collections/MEPS",
                     "rel": "self",
                     "type": "application/geo+json"
-                },
-                {
-                    "href": "http://localhost:1323/collections/MEPS/position",
-                    "rel": "data",
-                    "type": "application/vnd.cov+json"
                 }
             ],
             "output_formats": [
