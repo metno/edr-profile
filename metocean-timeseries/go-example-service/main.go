@@ -1,28 +1,24 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	echo "github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
-	"github.com/metno/edr-profile/forecast-timeseries/go-example-service/forecastts"
+	"github.com/metno/edr-profile/forecast-timeseries/go-example-service/metoceants"
 	"github.com/metno/edr-profile/forecast-timeseries/go-example-service/openapi"
 )
 
 func main() {
-	basePath := flag.String("base-path", "http://localhost:1323", "Base path to use when serving internal URLs.")
-	flag.Parse()
-
 	// Create service instance.
-	service := forecastts.NewHandler(*basePath)
+	service := metoceants.NewHandler("http://localhost:1323")
 
 	e := echo.New()
 	e.Pre(echomiddleware.RemoveTrailingSlash())
 
-	forecastts.RegisterHandlers(e, service)
+	metoceants.RegisterHandlers(e, service)
 	e.GET("/api", openapi.ServeEcho)
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {

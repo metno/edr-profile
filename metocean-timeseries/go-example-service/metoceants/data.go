@@ -1,4 +1,4 @@
-package forecastts
+package metoceants
 
 import (
 	"fmt"
@@ -32,7 +32,6 @@ func (h *Handler) baseCollection(collectionId CollectionId, collectionPath strin
 	return &Collection{
 		// Links []GetQueriesOKApplicationJSONLinksItem `json:"links"`
 		Id:       collectionId,
-		Title:    ptr("MEPS"),
 		Keywords: &[]string{"forecast", "timeseries", "nordic", "air_temperature"},
 		Extent: Extent{
 			Spatial: &struct {
@@ -160,12 +159,19 @@ func (h *Handler) baseCollection(collectionId CollectionId, collectionPath strin
 	}, nil
 }
 
-func (h *Handler) getInstanceCollection(collectionId CollectionId, collectionPath string) (*Collection, error) {
-	return h.baseCollection(collectionId, collectionPath)
+func (h *Handler) getInstanceCollection(reftime time.Time, collectionName string) (*Collection, error) {
+	instanceID := "d5b6e12e-fd85-447e-b35d-5aa429ad5e5e"
+	collectionPath := fmt.Sprintf("collections/%s/instances/%s", collectionName, instanceID)
+
+	collection, _ := h.baseCollection(instanceID, collectionPath)
+	collection.Title = ptr(fmt.Sprintf("%s %s", collectionName, reftime.Format(time.RFC3339)))
+
+	return collection, nil
 }
 
 func (h *Handler) getCollection(collectionId CollectionId, collectionPath string) (*Collection, error) {
 	collection, _ := h.baseCollection(collectionId, collectionPath)
+	collection.Title = ptr("MEPS")
 
 	collection.DataQueries.Instances = &struct {
 		Link *InstancesLink `json:"link,omitempty"`

@@ -1,4 +1,4 @@
-package forecastts
+package metoceants
 
 //go:generate /Users/vegardb/go/bin/oapi-codegen -o stub.go -generate server,types -package stub ../../openapi/edr.yaml
 

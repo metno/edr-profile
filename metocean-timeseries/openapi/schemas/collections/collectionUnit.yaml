@@ -1,0 +1,18 @@
+type: object
+title: unit name
+description: definition of unit
+required:
+  - label
+  - symbol
+properties:
+  label:
+    description: Name of the unit
+    type: string
+  symbol:
+    $ref: collectionUnitSymbol.yaml
+example:
+  label:
+    en: Kelvin
+  symbol:
+    value: K
+    type: http://www.opengis.net/def/uom/UCUM/

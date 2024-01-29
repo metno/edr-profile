@@ -1,0 +1,34 @@
+type: object
+title: EDR GeoJSON Properties 
+description: Properties to describe existing EDR features -- may be real-world or virtual sampling features.
+example:
+- name: 
+    en: Monitoring site name
+  parameter-name:
+    - velocity
+    - air_temperature
+  edrqueryendpoint: "https://example.org/api/collections/collection/locations/location_123"
+required:
+  - edrqueryendpoint
+properties:
+  parameter-name:
+      type: array
+      title: Available Parameters
+      description: Unique IDs of available parameters, this is the value used for querying the data and corresponds to an ID in the parameter metadata of the collection.
+      items:
+          type: string
+          title: Parameter ID list
+          description: Each entry should contain one parameter ID that can be used to query against the feature.
+          default: ''
+          example:
+            - velocity
+            - temperature
+  name:
+    $ref: ../i18n.yaml
+  edrqueryendpoint:
+      type: string
+      title: EDR Query Endpoint
+      description: A URI identifying the query end point. May identify a specific location.
+      default: ''
+      example:
+        - "https://example.org/api/collections/collection/locations/location_123d}"

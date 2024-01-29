@@ -1,0 +1,9 @@
+allOf:
+  - $ref: ../core/link.yaml
+  - type: object
+    properties:
+      href:
+        type: string
+        example: https://example.com/collections/monitoringsites/locations
+      variables:
+        $ref: instancesDataQuery.yaml

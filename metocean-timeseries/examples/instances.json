@@ -7,7 +7,7 @@
             "data_queries": {
                 "locations": {
                     "link": {
-                        "href": "http://localhost:1323/collections/MEPS/instances/20240101T030000Z/locations",
+                        "href": "http://localhost:1323/collections/MEPS/instances/d5b6e12e-fd85-447e-b35d-5aa429ad5e5e/locations",
                         "rel": "data",
                         "variables": {
                             "crs_details": [
@@ -27,7 +27,7 @@
                 },
                 "position": {
                     "link": {
-                        "href": "http://localhost:1323/collections/MEPS/instances/20240101T030000Z/position?coords={coords}",
+                        "href": "http://localhost:1323/collections/MEPS/instances/d5b6e12e-fd85-447e-b35d-5aa429ad5e5e/position?coords={coords}",
                         "rel": "data",
                         "templated": true,
                         "variables": {
@@ -87,7 +87,7 @@
                     "vrs": "PARAMETRICCRS[\"WMO standard atmosphere layer 0\",PDATUM[\"Mean Sea Level\",ANCHOR[\"101325 Pa at 15°C\"]],CS[parametric,1],AXIS[\"pressure (Pa)\",up],PARAMETRICUNIT[\"Pascal\",1.0]]"
                 }
             },
-            "id": "20240101T030000Z",
+            "id": "d5b6e12e-fd85-447e-b35d-5aa429ad5e5e",
             "keywords": [
                 "forecast",
                 "timeseries",
@@ -114,7 +114,7 @@
                     }
                 }
             },
-            "title": "MEPS"
+            "title": "MEPS 2024-01-01T03:00:00Z"
         }
     ],
     "links": [

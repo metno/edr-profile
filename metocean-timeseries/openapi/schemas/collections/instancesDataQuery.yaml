@@ -1,0 +1,13 @@
+allOf:
+  - $ref: DataQuery.yaml
+  - type: object
+    required:
+      - query_type
+    properties:
+      query_type:
+        description: Type of EDR query
+        type: string
+        enum: 
+          - instances
+        example: instances
+     

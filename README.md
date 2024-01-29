@@ -11,9 +11,8 @@ We build a separate profile for each data type. Each profile is versioned separa
 
 The data types are:
 
-- [Weather forecast timeseries](forecast-timeseries/README.md)
+- [Timeseries for meteorological and oceanographic data](metocean-timeseries/README.md)
 - Aviation
-- In-situ observations
 - Radar
 
 ## Tentative process for developing the profiles

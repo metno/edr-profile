@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<testsuites disabled="0" errors="0" failures="0" tests="7" time="9.121870920032961">
+	<testsuite disabled="0" errors="0" failures="0" name="schemathesis" skipped="0" tests="7" time="9.121870920032961" hostname="Comet.local">
+		<testcase name="GET /" time="0.819335"/>
+		<testcase name="GET /conformance" time="0.735563"/>
+		<testcase name="GET /collections" time="2.174436"/>
+		<testcase name="GET /collections/{collectionId}" time="0.840398"/>
+		<testcase name="GET /collections/{collectionId}/instances" time="1.272636"/>
+		<testcase name="GET /collections/{collectionId}/position" time="1.509202"/>
+		<testcase name="GET /collections/{collectionId}/instances/{instanceId}/position" time="1.770301"/>
+	</testsuite>
+</testsuites>

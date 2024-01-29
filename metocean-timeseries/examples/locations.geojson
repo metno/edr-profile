@@ -10,7 +10,7 @@
             },
             "id": "oslo",
             "properties": {
-                "edrqueryendpoint": "http://localhost:1323/collections/MEPS/instances/20240101T030000Z/locations/oslo",
+                "edrqueryendpoint": "http://localhost:1323/collections/MEPS/instances/d5b6e12e-fd85-447e-b35d-5aa429ad5e5e/locations/oslo",
                 "name": {
                     "en": "Oslo"
                 },

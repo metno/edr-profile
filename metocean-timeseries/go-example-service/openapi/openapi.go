@@ -8,7 +8,7 @@ import (
 	_ "embed"
 )
 
-//go:embed forecast-ts-bundle.yaml
+//go:embed metocean-ts-bundle.yaml
 var schema []byte
 
 // Serve sends the openapi schema to the requestor.

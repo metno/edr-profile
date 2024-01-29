@@ -1,0 +1,15 @@
+title: Describe unit symbol
+type: object
+properties:      
+  value:
+    description: representation of the units symbol
+    type: string
+  type:
+    description: uri to detailed desxcription of the units
+    type: string
+  description: 
+    description: A text description of the symbol
+    type: string
+  title:
+    description: Symbol name
+    type: string

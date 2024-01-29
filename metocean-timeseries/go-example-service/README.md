@@ -10,9 +10,9 @@
 ### Autogeneration
 
 ```bash
-cd forecast-timeseries/go-example-service
-mkdir forecastts
-oapi-codegen -generate types,server -package forecastts openapi/forecast-ts-bundle.yaml > forecastts/forecastts.gen.go
+cd metocean-timeseries/go-example-service
+mkdir metoceants
+oapi-codegen -generate types,server -package metoceants openapi/metocean-ts-bundle.yaml > metoceants/metoceants.gen.go
 ```
 
 ## How to use
