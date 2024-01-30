@@ -38,18 +38,17 @@ OpenAPI specifications in this profile was copied from https://github.com/openge
 - B: temporal extent SHALL either be null or specify the start and end time that cover all instances of this collection.
 - C: CRS of the spatial extent and the datasets returned by data queries SHOULD be WGS 84: http://www.opengis.net/def/crs/OGC/1.3/CRS84.
 - D: parameter_names includes all parameters mentioned in at least one of the instances. No guarantee that a parameter will be available for all instances.
-- E: Use the CF-convention(http://cfconventions.org/Data/cf-standard-names/current/build/cf-standard-name-table.html) to describe parameters when possible. The member id of observedProperty SHOULD be a unique resolvable url. If no term exists in the CF-convention, use the CF standard names as a starting point for constructing a unique id of your parameter.
+- E: Use the CF-convention(http://cfconventions.org/Data/cf-standard-names/current/build/cf-standard-name-table.html) to describe parameters when possible. The member id of observedProperty SHOULD be a unique resolvable url. If no suitable term exists in the list CF-convention standard names, use a CF-convention standard name as a starting point for constructing a unique id of your parameter.
 
 ### Requirement 2
 
 #### Instances
 
-- A: id of an instance SHOULD be a unique string, e.g uuid.
+- A: id of an instance SHOULD be a unique string, e.g an uuid.
 - B: The title of the instance SHOULD be a short string meant to easily convey what sets this instance apart from all the other instances of the collection. E.g it should be a size and contant that makes it suitable fir populating a list of options a person can be pick from. For forecast model data it is natural to use the reference time of the produced model run as part of the title.
-- C: If it is necessary to have the reference time of the instance (e.g for forecast model runs) as structured data then add another custom top-level property `refererence_time` with a string value on the format of `20240101T000000Z`.
-- E: All temporal values are on the format: https://datatracker.ietf.org/doc/html/rfc3339#section-5.6.
-- F: temporal extent SHALL describe the start and end of the model forecast run that this instance represent.
-- G: parameter_names must list the exact parameters available in this instance of the collection.
+- C: If it is necessary to have the reference time of the instance (e.g for forecast model runs) as structured data then add another custom top-level property `reference_time` with a string value on the format of `20240101T000000Z`.
+- D: All temporal values are on the format: https://datatracker.ietf.org/doc/html/rfc3339#section-5.6.
+- E: parameter_names SHALL list the exact parameters available in this instance of the collection.
 
 ### Requirement 3
 
