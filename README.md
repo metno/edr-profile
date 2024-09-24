@@ -1,5 +1,6 @@
 # edr-profile
-NOTE: This repo is no longer updated, and will be removed in the near future.
+
+**NOTE: This repo is no longer updated, and will be removed in the near future. See <https://github.com/EURODEO/rodeo-edr-profile>**
 
 An edr profile sets constraints and extensions for an OGC-API EDR service providing meteorological and oceanographic data.
 
